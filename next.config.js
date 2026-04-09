@@ -2,6 +2,7 @@
 const nextConfig = {
   // Next.js 15 — React 19
   reactStrictMode: true,
+  output: 'standalone',
   async headers() {
     return [
       {
