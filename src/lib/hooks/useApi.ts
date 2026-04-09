@@ -57,7 +57,7 @@ async function etlFetch<T>(path: string, options?: RequestInit): Promise<T> {
 // l'API NestJS retourne du camelCase français, les mocks utilisent des champs anglais
 // ces fonctions font le pont pour que les composants n'aient pas à changer
 
-function mapUtilisateur(u: Utilisateur & Record<string, unknown>): Utilisateur & { id: string; name: string; plan: string } {
+function mapUtilisateur(u: Utilisateur): Utilisateur & { id: string; name: string; plan: string } {
   return {
     ...u,
     id: String(u.idUtilisateur),
@@ -186,10 +186,10 @@ export function useKpis() {
   return useQuery({
     queryKey: ["kpis"],
     queryFn: async (): Promise<DashboardKpis> => {
-      if (USE_MOCK) { await pause(150); return MOCK_KPIS; }
+      if (USE_MOCK) { await pause(150); return MOCK_KPIS as unknown as DashboardKpis; }
       // pas encore d'endpoint /analytics dans NestJS — fallback mock en attendant
       // TODO: return nestFetch<DashboardKpis>("/analytics/kpis");
-      return MOCK_KPIS;
+      return MOCK_KPIS as unknown as DashboardKpis;
     },
     refetchInterval: 60 * 1000,
   });
@@ -206,11 +206,11 @@ export function usePipelineRuns() {
   return useQuery({
     queryKey: ["pipeline-runs"],
     queryFn: async (): Promise<PipelineRun[]> => {
-      if (USE_MOCK) { await pause(200); return MOCK_PIPELINE_RUNS; }
+      if (USE_MOCK) { await pause(200); return MOCK_PIPELINE_RUNS as PipelineRun[]; }
       // vérifie juste que l'ETL répond
       await etlFetch<{ status: string }>("/health");
       // TODO: return etlFetch<PipelineRun[]>("/runs") quand l'endpoint sera dispo
-      return MOCK_PIPELINE_RUNS;
+      return MOCK_PIPELINE_RUNS as PipelineRun[];
     },
     refetchInterval: 30 * 1000,
   });
@@ -222,9 +222,9 @@ export function useDataQuality() {
   return useQuery({
     queryKey: ["data-quality"],
     queryFn: async (): Promise<RapportQualite[]> => {
-      if (USE_MOCK) { await pause(200); return MOCK_DATA_QUALITY; }
+      if (USE_MOCK) { await pause(200); return MOCK_DATA_QUALITY as RapportQualite[]; }
       // TODO: return etlFetch<RapportQualite[]>("/quality/reports");
-      return MOCK_DATA_QUALITY;
+      return MOCK_DATA_QUALITY as RapportQualite[];
     },
     staleTime: 10 * 60 * 1000,
   });
