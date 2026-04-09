@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthai-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_METABASE_URL=${NEXT_PUBLIC_METABASE_URL}
+    networks:
+      - healthai-network
+    restart: unless-stopped
+
+networks:
+  healthai-network:
+    external: true  # Réseau partagé avec le backend NestJS et Metabase

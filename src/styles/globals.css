@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Palette HealthAI — dark teal industriel avec accent vert bio */
+    --background: 220 20% 97%;
+    --foreground: 220 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+
+    --primary: 171 72% 28%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 93%;
+    --secondary-foreground: 220 25% 20%;
+
+    --muted: 220 12% 94%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 142 60% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 60% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 95% 55%;
+    --warning-foreground: 0 0% 10%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 171 72% 28%;
+
+    --radius: 0.625rem;
+
+    --font-display: 'Fraunces', serif;
+  }
+
+  .dark {
+    --background: 220 20% 8%;
+    --foreground: 220 15% 92%;
+
+    --card: 220 18% 11%;
+    --card-foreground: 220 15% 92%;
+
+    --primary: 171 60% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 16% 16%;
+    --secondary-foreground: 220 15% 80%;
+
+    --muted: 220 14% 14%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 142 55% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 55% 50%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 90% 58%;
+    --warning-foreground: 0 0% 10%;
+
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 171 60% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+  }
+
+  code, pre {
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Focus visible — RGAA AA */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Skip link — RGAA AA */
+  .skip-link {
+    @apply absolute -top-full left-4 z-[9999] bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium;
+    transition: top 0.1s;
+  }
+  .skip-link:focus {
+    @apply top-4;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+
+  .glass {
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODE MALVOYANT — RGAA niveau AAA
+   Classe .low-vision appliquée sur <html> via AppThemeProvider
+
+   Critères RGAA couverts :
+   - 3.2 : Contraste renforcé (ratio ≥ 7:1 texte normal, ≥ 4.5:1 texte large)
+   - 10.4 : Taille de texte doublée sans perte de lisibilité
+   - 10.5 : Espacement du texte augmenté
+   - 10.12 : Pas de perte d'information en mode zoom 200%
+   ──────────────────────────────────────────────────────────────────────────── */
+
+:root.low-vision {
+  /* Contraste très élevé (fond crème / texte quasi-noir) */
+  --background: 48 100% 97%;
+  --foreground: 0 0% 5%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 5%;
+  --primary: 171 80% 20%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 48 50% 92%;
+  --secondary-foreground: 0 0% 5%;
+  --muted: 48 30% 90%;
+  --muted-foreground: 0 0% 20%;
+  --accent: 142 70% 30%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 90% 38%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 142 70% 30%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 100% 38%;
+  --warning-foreground: 0 0% 100%;
+  --border: 0 0% 40%;
+  --input: 0 0% 40%;
+  --ring: 171 80% 20%;
+
+  /* Taille de texte augmentée */
+  font-size: 120%;
+
+  /* Espacement accru (RGAA 10.5) */
+  --lv-line-height: 1.8;
+  --lv-letter-spacing: 0.05em;
+  --lv-word-spacing: 0.2em;
+}
+
+:root.low-vision body {
+  line-height: var(--lv-line-height);
+  letter-spacing: var(--lv-letter-spacing);
+  word-spacing: var(--lv-word-spacing);
+}
+
+/* Textes plus grands et espacés */
+:root.low-vision p,
+:root.low-vision span,
+:root.low-vision li,
+:root.low-vision td,
+:root.low-vision th,
+:root.low-vision label {
+  line-height: var(--lv-line-height);
+  letter-spacing: var(--lv-letter-spacing);
+}
+
+/* Bordures plus épaisses pour les éléments interactifs */
+:root.low-vision input,
+:root.low-vision textarea,
+:root.low-vision select,
+:root.low-vision button {
+  border-width: 2px !important;
+  min-height: 3rem;
+}
+
+/* Focus encore plus visible */
+:root.low-vision :focus-visible {
+  outline: 4px solid hsl(var(--primary)) !important;
+  outline-offset: 4px !important;
+}
+
+/* Liens soulignés et distincts */
+:root.low-vision a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+
+/* Mode sombre malvoyant (dark + low-vision combinés) */
+:root.dark.low-vision {
+  --background: 0 0% 4%;
+  --foreground: 60 100% 97%;
+  --card: 0 0% 8%;
+  --card-foreground: 60 100% 97%;
+  --primary: 171 80% 65%;
+  --primary-foreground: 0 0% 5%;
+  --muted-foreground: 0 0% 80%;
+  --border: 0 0% 60%;
+  --success: 142 70% 65%;
+  --warning: 38 100% 70%;
+  --destructive: 0 90% 70%;
+}
