@@ -14,7 +14,9 @@ import { DeleteConfirmModal } from "@/components/ui/DeleteConfirmModal";
 import { useUsers, useNutrition, useExercises, useDietRecommendations, useDataQuality } from "@/lib/hooks/useApi";
 import { useToast } from "@/components/ui/Toast";
 import { formatNumber, formatDate, WORKOUT_LABELS, PLAN_LABELS, EXPERIENCE_LABELS, MEAL_LABELS, EXERCISE_LEVEL_LABELS, DIET_LABELS } from "@/lib/utils";
-import type { User, NutritionEntry, Exercise, DietRecommendation } from "@/types";
+// Les colonnes utilisent la shape plate des mocks / données mappées.
+// On type les colonnes avec Record<string, unknown> pour être agnostique à la source.
+type Row = Record<string, unknown>;
 
 // ─── Définition des champs éditables par dataset ─────────────────────────────
 
@@ -58,8 +60,10 @@ const DIET_FIELDS = [
 
 // ─── Hook générique pour gérer un dataset éditable ────────────────────────────
 
-function useEditableDataset<T extends { id: string }>(initialData: T[] | undefined) {
+function useEditableDataset<T extends object>(initialData: T[] | undefined) {
   const [data, setData] = useState<T[] | null>(null);
+
+  const getId = (r: T) => (r as Record<string, unknown>).id as string;
 
   // Initialise depuis l'API dès que les données arrivent (une seule fois)
   const init = useCallback((rows: T[]) => {
@@ -67,12 +71,12 @@ function useEditableDataset<T extends { id: string }>(initialData: T[] | undefin
   }, []);
 
   const updateRow = useCallback((id: string, values: Partial<T>) => {
-    setData((prev) => prev?.map((r) => r.id === id ? { ...r, ...values } : r) ?? null);
-  }, []);
+    setData((prev) => prev?.map((r) => getId(r) === id ? { ...r, ...values } : r) ?? null);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const deleteRow = useCallback((id: string) => {
-    setData((prev) => prev?.filter((r) => r.id !== id) ?? null);
-  }, []);
+    setData((prev) => prev?.filter((r) => getId(r) !== id) ?? null);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const rows = data ?? initialData ?? [];
 
@@ -116,17 +120,19 @@ export default function DatasetsPage() {
   const { data: dietRaw, isLoading: dietLoading } = useDietRecommendations();
   const { data: quality } = useDataQuality();
 
+  type AnyRow = Record<string, unknown>;
   // Datasets éditables en local (prêt pour PATCH /api/users/:id)
-  const users     = useEditableDataset<User>(usersRaw);
-  const nutrition = useEditableDataset<NutritionEntry>(nutritionRaw);
-  const exercises = useEditableDataset<Exercise>(exercisesRaw);
-  const diet      = useEditableDataset<DietRecommendation>(dietRaw);
+  // Cast nécessaire : les hooks retournent une union mock/API que TS ne peut pas réconcilier
+  const users     = useEditableDataset(usersRaw     as AnyRow[] | undefined);
+  const nutrition = useEditableDataset(nutritionRaw as AnyRow[] | undefined);
+  const exercises = useEditableDataset(exercisesRaw as AnyRow[] | undefined);
+  const diet      = useEditableDataset(dietRaw      as AnyRow[] | undefined);
 
   // Initialiser dès que les données arrivent
-  if (usersRaw && !users.rows.length)     users.init(usersRaw);
-  if (nutritionRaw && !nutrition.rows.length) nutrition.init(nutritionRaw);
-  if (exercisesRaw && !exercises.rows.length) exercises.init(exercisesRaw);
-  if (dietRaw && !diet.rows.length)       diet.init(dietRaw);
+  if (usersRaw && !users.rows.length)         users.init(usersRaw         as AnyRow[]);
+  if (nutritionRaw && !nutrition.rows.length) nutrition.init(nutritionRaw as AnyRow[]);
+  if (exercisesRaw && !exercises.rows.length) exercises.init(exercisesRaw as AnyRow[]);
+  if (dietRaw && !diet.rows.length)           diet.init(dietRaw           as AnyRow[]);
 
   // Marquer un dataset comme inspecté
   const markInspected = (tabId: string) => {
@@ -149,10 +155,10 @@ export default function DatasetsPage() {
   const handleSave = (data: Record<string,unknown>) => {
     const id = editModal.row?.id as string;
     const ds = editModal.dataset;
-    if (ds === "users")     users.updateRow(id, data as Partial<User>);
-    if (ds === "nutrition") nutrition.updateRow(id, data as Partial<NutritionEntry>);
-    if (ds === "exercises") exercises.updateRow(id, data as Partial<Exercise>);
-    if (ds === "diet")      diet.updateRow(id, data as Partial<DietRecommendation>);
+    if (ds === "users")     users.updateRow(id, data);
+    if (ds === "nutrition") nutrition.updateRow(id, data);
+    if (ds === "exercises") exercises.updateRow(id, data);
+    if (ds === "diet")      diet.updateRow(id, data);
     toast("success", "Ligne mise à jour — pensez à valider le dataset");
     // TODO: PATCH ${NESTJS_URL}/${ds}/${id} avec les nouvelles valeurs
   };
@@ -170,7 +176,7 @@ export default function DatasetsPage() {
 
   // ─── Colonnes par dataset ──────────────────────────────────────────────────
 
-  const userColumns: ColumnDef<User, unknown>[] = [
+  const userColumns: ColumnDef<Row, unknown>[] = [
     { accessorKey: "name", header: "Nom", cell: ({ getValue }) => <span className="font-medium text-xs">{getValue() as string}</span> },
     { accessorKey: "age", header: "Âge", cell: ({ getValue }) => `${getValue()} ans` },
     { accessorKey: "gender", header: "Genre", cell: ({ getValue }) => getValue() as string },
@@ -187,14 +193,14 @@ export default function DatasetsPage() {
     }},
     { id: "actions", header: "Actions", cell: ({ row }) => (
       <ActionCell
-        label={row.original.name}
-        onEdit={() => openEdit(row.original as unknown as Record<string,unknown>, "users")}
-        onDelete={() => openDelete(row.original.id, row.original.name, "users")}
+        label={row.original.name as string}
+        onEdit={() => openEdit(row.original, "users")}
+        onDelete={() => openDelete(row.original.id as string, row.original.name as string, "users")}
       />
     )},
   ];
 
-  const nutritionColumns: ColumnDef<NutritionEntry, unknown>[] = [
+  const nutritionColumns: ColumnDef<Row, unknown>[] = [
     { accessorKey: "food_item",       header: "Aliment",    cell: ({ getValue }) => <span className="font-medium text-xs">{getValue() as string}</span> },
     { accessorKey: "category",        header: "Catégorie",  cell: ({ getValue }) => <Badge variant="outline" className="text-[10px]">{getValue() as string}</Badge> },
     { accessorKey: "meal_type",       header: "Repas",      cell: ({ getValue }) => MEAL_LABELS[getValue() as string] ?? getValue() as string },
@@ -204,14 +210,14 @@ export default function DatasetsPage() {
     { accessorKey: "fat_g",           header: "Lipides",    cell: ({ getValue }) => `${getValue()} g` },
     { id: "actions", header: "Actions", cell: ({ row }) => (
       <ActionCell
-        label={row.original.food_item}
-        onEdit={() => openEdit(row.original as unknown as Record<string,unknown>, "nutrition")}
-        onDelete={() => openDelete(row.original.id, row.original.food_item, "nutrition")}
+        label={row.original.food_item as string}
+        onEdit={() => openEdit(row.original, "nutrition")}
+        onDelete={() => openDelete(row.original.id as string, row.original.food_item as string, "nutrition")}
       />
     )},
   ];
 
-  const exerciseColumns: ColumnDef<Exercise, unknown>[] = [
+  const exerciseColumns: ColumnDef<Row, unknown>[] = [
     { accessorKey: "name",     header: "Exercice", cell: ({ getValue }) => <span className="font-medium text-xs">{getValue() as string}</span> },
     { accessorKey: "category", header: "Catégorie", cell: ({ getValue }) => <Badge variant="outline" className="text-[10px] capitalize">{getValue() as string}</Badge> },
     { accessorKey: "level",    header: "Niveau", cell: ({ getValue }) => {
@@ -222,14 +228,14 @@ export default function DatasetsPage() {
     { accessorKey: "primary_muscles", header: "Muscles", cell: ({ getValue }) => <span className="text-xs">{(getValue() as string[]).join(", ")}</span> },
     { id: "actions", header: "Actions", cell: ({ row }) => (
       <ActionCell
-        label={row.original.name}
-        onEdit={() => openEdit(row.original as unknown as Record<string,unknown>, "exercises")}
-        onDelete={() => openDelete(row.original.id, row.original.name, "exercises")}
+        label={row.original.name as string}
+        onEdit={() => openEdit(row.original, "exercises")}
+        onDelete={() => openDelete(row.original.id as string, row.original.name as string, "exercises")}
       />
     )},
   ];
 
-  const dietColumns: ColumnDef<DietRecommendation, unknown>[] = [
+  const dietColumns: ColumnDef<Row, unknown>[] = [
     { accessorKey: "patient_id",           header: "Patient", cell: ({ getValue }) => <span className="font-mono text-xs">{getValue() as string}</span> },
     { accessorKey: "disease_type",          header: "Pathologie" },
     { accessorKey: "severity",              header: "Sévérité", cell: ({ getValue }) => {
@@ -244,9 +250,9 @@ export default function DatasetsPage() {
     { accessorKey: "adherence_to_diet_plan",header: "Adhérence", cell: ({ getValue }) => `${getValue()} %` },
     { id: "actions", header: "Actions", cell: ({ row }) => (
       <ActionCell
-        label={row.original.patient_id}
-        onEdit={() => openEdit(row.original as unknown as Record<string,unknown>, "diet")}
-        onDelete={() => openDelete(row.original.id, row.original.patient_id, "diet")}
+        label={row.original.patient_id as string}
+        onEdit={() => openEdit(row.original, "diet")}
+        onDelete={() => openDelete(row.original.id as string, row.original.patient_id as string, "diet")}
       />
     )},
   ];

@@ -11,13 +11,11 @@
 // TODO : remplacer par les appels API réels dans src/lib/hooks/useApi.ts
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type {
-  User, NutritionEntry, Exercise, DailyTracking,
-  DietRecommendation, PipelineRun, BusinessKpis, DataQualityReport,
-} from "@/types";
+// Les mocks ont une shape plate (pour les tableaux UI) différente des entités API.
+// On laisse TypeScript inférer le type depuis les littéraux.
 
 // ─── KPIs — calculés depuis les datasets réels ───────────────────────────────
-export const MOCK_KPIS: BusinessKpis = {
+export const MOCK_KPIS = {
   total_users: 973,             // gym_members_exercise_tracking.csv : 973 lignes
   active_users_last_30d: 512,
   premium_conversion_rate: 18.4,
@@ -29,7 +27,7 @@ export const MOCK_KPIS: BusinessKpis = {
 };
 
 // ─── Utilisateurs — extraits réels de gym_members_exercise_tracking.csv ──────
-export const MOCK_USERS: User[] = [
+export const MOCK_USERS = [
   {
     id: "u1", name: "Thomas Leroy", email: "thomas.leroy@healthai.fr",
     age: 56, gender: "Male", weight_kg: 88.3, height_m: 1.71, bmi: 30.2,
@@ -81,7 +79,7 @@ export const MOCK_USERS: User[] = [
 ];
 
 // ─── Nutrition — extraite de daily_food_nutrition_dataset.csv ─────────────────
-export const MOCK_NUTRITION: NutritionEntry[] = [
+export const MOCK_NUTRITION = [
   { id: "n1", user_id: "u1", date: "2024-07-21", food_item: "Scrambled Eggs (2 large)", category: "Protein/Dairy", calories_kcal: 180, protein_g: 12.0, carbohydrates_g: 2.0, fat_g: 14.0, fiber_g: 0.0, sugars_g: 1.0, sodium_mg: 180, cholesterol_mg: 370, meal_type: "Breakfast", water_intake_ml: 250 },
   { id: "n2", user_id: "u1", date: "2024-07-21", food_item: "Whole Wheat Toast (1 slice)", category: "Grain", calories_kcal: 80, protein_g: 4.0, carbohydrates_g: 14.0, fat_g: 1.0, fiber_g: 2.0, sugars_g: 2.0, sodium_mg: 140, cholesterol_mg: 0, meal_type: "Breakfast", water_intake_ml: 0 },
   { id: "n3", user_id: "u2", date: "2024-07-21", food_item: "Grilled Chicken Breast (150g)", category: "Meal/Protein", calories_kcal: 248, protein_g: 46.5, carbohydrates_g: 0.0, fat_g: 5.4, fiber_g: 0.0, sugars_g: 0.0, sodium_mg: 110, cholesterol_mg: 125, meal_type: "Lunch", water_intake_ml: 0 },
@@ -90,7 +88,7 @@ export const MOCK_NUTRITION: NutritionEntry[] = [
 ];
 
 // ─── Exercices — extraits réels de exercises.json (ExerciseDB) ────────────────
-export const MOCK_EXERCISES: Exercise[] = [
+export const MOCK_EXERCISES = [
   { id: "0001", name: "3/4 Sit-Up", force: "pull", level: "beginner", mechanic: "compound", equipment: "body only", primary_muscles: ["abdominals"], secondary_muscles: [], instructions: ["Lie down on the floor and secure your feet."], category: "strength", images: [] },
   { id: "0002", name: "Barbell Bench Press", force: "push", level: "beginner", mechanic: "compound", equipment: "barbell", primary_muscles: ["chest"], secondary_muscles: ["shoulders", "triceps"], instructions: ["Lie back on a flat bench."], category: "strength", images: [] },
   { id: "0003", name: "Deadlift", force: "pull", level: "intermediate", mechanic: "compound", equipment: "barbell", primary_muscles: ["lower back"], secondary_muscles: ["hamstrings", "glutes"], instructions: ["Stand with feet hip-width apart."], category: "powerlifting", images: [] },
@@ -102,7 +100,7 @@ export const MOCK_EXERCISES: Exercise[] = [
 ];
 
 // ─── Tracking quotidien — extrait de 25.csv (Fitness Tracker) ────────────────
-export const MOCK_DAILY_TRACKING: DailyTracking[] = [
+export const MOCK_DAILY_TRACKING = [
   { id: "t1", user_id: "u1", date: "2024-07-15", step_count: 5464, mood: 200, calories_burned: 181, hours_of_sleep: 5, is_active: false, weight_kg: 88.3 },
   { id: "t2", user_id: "u1", date: "2024-07-16", step_count: 6041, mood: 100, calories_burned: 197, hours_of_sleep: 8, is_active: false, weight_kg: 88.1 },
   { id: "t3", user_id: "u2", date: "2024-07-15", step_count: 9200, mood: 300, calories_burned: 340, hours_of_sleep: 7, is_active: true, weight_kg: 74.7 },
@@ -110,14 +108,14 @@ export const MOCK_DAILY_TRACKING: DailyTracking[] = [
 ];
 
 // ─── Recommandations diététiques — diet_recommendations_dataset.csv ───────────
-export const MOCK_DIET_RECOMMENDATIONS: DietRecommendation[] = [
+export const MOCK_DIET_RECOMMENDATIONS = [
   { id: "d1", user_id: "u1", patient_id: "P0001", disease_type: "Obesity", severity: "Moderate", physical_activity_level: "Moderate", daily_caloric_intake: 3079, cholesterol_mg_dl: 173.3, blood_pressure_mmhg: "133", glucose_mg_dl: 116.3, dietary_restrictions: "None", allergies: "Peanuts", preferred_cuisine: "Mexican", weekly_exercise_hours: 3.1, adherence_to_diet_plan: 96.6, dietary_nutrient_imbalance_score: 3.1, diet_recommendation: "Balanced" },
   { id: "d2", user_id: "u2", patient_id: "P0002", disease_type: "Diabetes", severity: "Mild", physical_activity_level: "Moderate", daily_caloric_intake: 3032, cholesterol_mg_dl: 199.2, blood_pressure_mmhg: "120", glucose_mg_dl: 137.1, dietary_restrictions: "None", allergies: "Peanuts", preferred_cuisine: "Chinese", weekly_exercise_hours: 4.5, adherence_to_diet_plan: 63.2, dietary_nutrient_imbalance_score: 0.6, diet_recommendation: "Low_Carb" },
   { id: "d3", user_id: "u3", patient_id: "P0003", disease_type: "Hypertension", severity: "Moderate", physical_activity_level: "High", daily_caloric_intake: 2400, cholesterol_mg_dl: 158.0, blood_pressure_mmhg: "145", glucose_mg_dl: 98.0, dietary_restrictions: "Low sodium", allergies: "None", preferred_cuisine: "Mediterranean", weekly_exercise_hours: 6.0, adherence_to_diet_plan: 82.0, dietary_nutrient_imbalance_score: 1.2, diet_recommendation: "Low_Sodium" },
 ];
 
 // ─── Pipelines ETL — 5 sources réelles du projet ─────────────────────────────
-export const MOCK_PIPELINE_RUNS: PipelineRun[] = [
+export const MOCK_PIPELINE_RUNS = [
   { id: "p1", name: "Import Gym Members Dataset", source: "csv", dataset_file: "gym_members_exercise_tracking.csv", status: "success", started_at: "2024-07-21T06:00:00Z", finished_at: "2024-07-21T06:02:44Z", rows_ingested: 973, rows_rejected: 0 },
   { id: "p2", name: "Import Gym Synthetic Dataset", source: "csv", dataset_file: "gym_members_exercise_tracking_synthetic_data.csv", status: "success", started_at: "2024-07-21T06:03:00Z", finished_at: "2024-07-21T06:05:12Z", rows_ingested: 1800, rows_rejected: 12 },
   { id: "p3", name: "Import Daily Food & Nutrition", source: "csv", dataset_file: "daily_food_nutrition_dataset.csv", status: "success", started_at: "2024-07-21T06:06:00Z", finished_at: "2024-07-21T06:07:33Z", rows_ingested: 651, rows_rejected: 8 },
@@ -127,7 +125,7 @@ export const MOCK_PIPELINE_RUNS: PipelineRun[] = [
 ];
 
 // ─── Qualité des données par dataset ─────────────────────────────────────────
-export const MOCK_DATA_QUALITY: DataQualityReport[] = [
+export const MOCK_DATA_QUALITY = [
   { dataset: "Gym Members Exercise Tracking", source_file: "gym_members_exercise_tracking.csv", total_rows: 973, valid_rows: 973, missing_values: 0, duplicates: 0, outliers: 4, last_checked_at: "2024-07-21T06:02:44Z" },
   { dataset: "Gym Members Synthetic", source_file: "gym_members_exercise_tracking_synthetic_data.csv", total_rows: 1812, valid_rows: 1800, missing_values: 6, duplicates: 6, outliers: 12, last_checked_at: "2024-07-21T06:05:12Z" },
   { dataset: "Daily Food & Nutrition", source_file: "daily_food_nutrition_dataset.csv", total_rows: 659, valid_rows: 651, missing_values: 5, duplicates: 3, outliers: 8, last_checked_at: "2024-07-21T06:07:33Z" },

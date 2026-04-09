@@ -169,41 +169,41 @@ export type FormatSource = "csv" | "json" | "xlsx" | "api";
 
 export interface PipelineRun {
   id: string;
-  nom: string;
+  name: string;
   source: FormatSource;
-  fichierDataset: string;
-  statut: StatutPipeline;
-  debutAt: string;
-  finAt?: string;
-  lignesIngérees: number;
-  lignesRejetées: number;
-  messageErreur?: string;
+  dataset_file: string;
+  status: StatutPipeline;
+  started_at: string;
+  finished_at?: string;
+  rows_ingested: number;
+  rows_rejected: number;
+  error_message?: string;
 }
 
 // ── KPIs dashboard ────────────────────────────────────────────────────────────
 
 export interface DashboardKpis {
-  totalUtilisateurs: number;
-  utilisateursActifs30j: number;
-  tauxConversionPremium: number;
-  dureeSessionMoyenneH: number;
-  caloriesMoyennesDepensees: number;
-  scoreQualiteDonnees: number;
-  pipelinesAujourdhui: number;
-  tauxErreurPourcentage: number;
+  total_users: number;
+  active_users_last_30d: number;
+  premium_conversion_rate: number;
+  avg_session_duration_hours: number;
+  avg_calories_burned: number;
+  data_quality_score: number;
+  pipelines_run_today: number;
+  error_rate_percent: number;
 }
 
 // ── Rapport qualité dataset (FastAPI) ─────────────────────────────────────────
 
 export interface RapportQualite {
   dataset: string;
-  fichierSource: string;
-  totalLignes: number;
-  lignesValides: number;
-  valeursManquantes: number;
-  doublons: number;
-  aberrations: number;
-  verifiéLe: string;
+  source_file: string;
+  total_rows: number;
+  valid_rows: number;
+  missing_values: number;
+  duplicates: number;
+  outliers: number;
+  last_checked_at: string;
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
