@@ -36,11 +36,13 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     env:
-      # next-auth v5 exige AUTH_SECRET même en CI
       AUTH_SECRET: ci-test-secret-not-used-in-production
-      # Contourne la protection JWT du middleware pour les tests E2E
       SKIP_AUTH: "true"
       NEXT_PUBLIC_USE_MOCK: "true"
+      # Valeurs factices pour satisfaire l'init next-auth (jamais appelées en CI)
+      ZITADEL_ISSUER: https://ci-dummy.zitadel.cloud
+      ZITADEL_CLIENT_ID: ci-dummy-client-id
+      ZITADEL_CLIENT_SECRET: ci-dummy-client-secret
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
