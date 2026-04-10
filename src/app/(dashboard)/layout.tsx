@@ -12,7 +12,7 @@ export default function DashboardLayout({
         <main
           id="main-content"
           className="flex-1 overflow-y-auto scrollbar-thin"
-          tabIndex={-1}
+          tabIndex={0}
         >
           {children}
         </main>

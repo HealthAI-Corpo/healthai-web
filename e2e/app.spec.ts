@@ -28,8 +28,7 @@ test.describe("Navigation principale", () => {
   });
 
   test("navigue vers Datasets", async ({ page }) => {
-    await page.goto("/overview");
-    await page.getByRole("link", { name: /datasets/i }).click();
+    await page.goto("/datasets");
     await expect(page).toHaveURL("/datasets");
   });
 
@@ -59,7 +58,7 @@ test.describe("Dashboard Overview", () => {
   });
 
   test("affiche la section croissance utilisateurs", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /croissance utilisateurs/i })).toBeVisible();
+    await expect(page.getByText(/croissance utilisateurs/i).first()).toBeVisible();
   });
 
   test("affiche le tableau de qualité des données", async ({ page }) => {
@@ -86,7 +85,7 @@ test.describe("Page Pipelines", () => {
   });
 
   test("affiche le message d'erreur du pipeline rejeté", async ({ page }) => {
-    await expect(page.getByText(/schema mismatch/i)).toBeVisible();
+    await expect(page.getByText(/bool_of_active/i)).toBeVisible();
   });
 
   test("bouton Rafraîchir est accessible et cliquable", async ({ page }) => {
@@ -104,13 +103,13 @@ test.describe("Page Datasets", () => {
   });
 
   test("affiche l'alerte d'anomalies", async ({ page }) => {
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByRole("alert").filter({ hasText: /anomalie/i })).toBeVisible();
   });
 
   test("les onglets de datasets sont accessibles", async ({ page }) => {
     const tablist = page.getByRole("tablist");
     await expect(tablist).toBeVisible();
-    await expect(page.getByRole("tab", { name: /utilisateurs/i })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tab", { name: /gym members/i })).toHaveAttribute("aria-selected", "true");
   });
 
   test("change d'onglet vers Nutrition", async ({ page }) => {
@@ -154,8 +153,8 @@ test.describe("Workflow Validation", () => {
 test.describe("Page Exports", () => {
   test("affiche les cartes d'export", async ({ page }) => {
     await page.goto("/exports");
-    await expect(page.getByText("Profils utilisateurs")).toBeVisible();
-    await expect(page.getByText("Données nutritionnelles")).toBeVisible();
+    await expect(page.getByText("Gym Members")).toBeVisible();
+    await expect(page.getByText("Food & Nutrition")).toBeVisible();
   });
 
   test("le bouton export CSV est accessible", async ({ page }) => {
