@@ -21,6 +21,18 @@ jobs:
       - run: npm run lint
 
   test:
+    name: Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install --prefer-offline
+      - run: npm run test
+
+  e2e:
     name: Playwright e2e
     runs-on: ubuntu-latest
     continue-on-error: true
