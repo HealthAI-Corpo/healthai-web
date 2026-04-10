@@ -10,6 +10,7 @@ jobs:
   lint:
     name: ESLint
     runs-on: ubuntu-latest
+    # pas de continue-on-error : un lint cassé bloque le build-push
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
