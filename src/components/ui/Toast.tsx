@@ -52,6 +52,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {/* Zone de notifications — RGAA: aria-live */}
       <div
         className="fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+        role="region"
         aria-live="polite"
         aria-atomic="false"
         aria-label="Notifications"
