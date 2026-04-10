@@ -4,6 +4,9 @@ import type { NextRequest } from "next/server";
 
 // Protect all routes except /login and Next.js internals
 export default auth((req: NextRequest & { auth: unknown }) => {
+  // Bypass auth protection in E2E / mock environments (CI)
+  if (process.env.SKIP_AUTH === "true") return NextResponse.next();
+
   const isLoggedIn = !!(req as { auth: unknown }).auth;
   const { pathname } = req.nextUrl;
 
