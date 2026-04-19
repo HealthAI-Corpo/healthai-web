@@ -238,13 +238,11 @@ export interface SelectOption<T = string> {
   value: T;
 }
 
-// Rétrocompat — alias utilisés dans les pages existantes
-// à nettoyer quand on migre complètement vers l'API réelle
-export type User = Utilisateur;
-export type NutritionEntry = Aliment;
-export type Exercise = Exercice;
+export type User = Utilisateur &{ id: string; name: string; plan: string };
+export type NutritionEntry = Aliment & { id: string };
+export type Exercise = Exercice & { id: string; name: string };
 export type DailyTracking = LogSante;
-export type DietRecommendation = RecommandationRegime;
+export type DietRecommendation = RecommandationRegime & { id: string };
 export type BusinessKpis = DashboardKpis;
 export type DataQualityReport = RapportQualite;
 export type PipelineStatus = StatutPipeline;
