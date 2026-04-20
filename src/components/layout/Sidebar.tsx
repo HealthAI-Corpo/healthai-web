@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppTheme } from "@/lib/theme";
+import Image from "next/image";
 
 const NAV_SECTIONS = [
   {
@@ -51,9 +52,11 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="flex h-16 items-center border-b border-border px-6">
-        <img
+        <Image
           src="/wessim_logo-black.png"
           alt="HealthAI Coach"
+          width={32}
+          height={32}
           className="h-8 w-auto"
         />
       </div>

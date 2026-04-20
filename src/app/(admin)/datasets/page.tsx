@@ -102,9 +102,13 @@ export default function DatasetsPage() {
   const exercises = useEditableDataset<Exercise>(exercisesData as unknown as Exercise[]);
   const diet      = useEditableDataset<DietRecommendation>(dietData as unknown as DietRecommendation[]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (usersData)     users.init(usersData as unknown as User[]); },                 [usersData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (nutritionData) nutrition.init(nutritionData as unknown as NutritionEntry[]); }, [nutritionData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (exercisesData) exercises.init(exercisesData as unknown as Exercise[]); },      [exercisesData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (dietData)      diet.init(dietData as unknown as DietRecommendation[]); },      [dietData]);
 
   const markInspected = (id: string) => setInspected((p) => ({ ...p, [id]: true }));
