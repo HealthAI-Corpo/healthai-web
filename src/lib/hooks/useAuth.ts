@@ -1,50 +1,41 @@
-// Gestion de l'auth NestJS — JWT + API Key + Client ID
-// POST /auth/login → access_token stocké en localStorage
-// Le token est lu par apiFetch() dans useApi.ts
+// Auth ZITADEL via next-auth (Auth.js v5)
+// Le flow OIDC est géré par next-auth — l'access_token ZITADEL est
+// synchronisé dans localStorage par TokenSync (providers.tsx) pour que
+// nestFetch() / getAuthHeaders() puisse le lire sans être un hook.
 
-import { useState, useEffect } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const TOKEN_KEY = "healthai_jwt";
-const NESTJS = process.env.NEXT_PUBLIC_NESTJS_URL ?? "http://localhost:3001";
 
-// headers communs à mettre sur chaque requête vers NestJS
+const NESTJS = process.env.NEXT_PUBLIC_NESTJS_URL ?? "http://localhost:3001";
+// gardé pour les composants qui auraient besoin de l'URL de base
+export { NESTJS };
+
+// Headers Bearer + API Key à injecter sur chaque requête NestJS
 export function getAuthHeaders(): Record<string, string> {
-  const token = typeof window !== "undefined"
-    ? localStorage.getItem(TOKEN_KEY) ?? ""
-    : "";
+  const token =
+    typeof window !== "undefined"
+      ? (localStorage.getItem(TOKEN_KEY) ?? "")
+      : "";
   return {
     "Content-Type": "application/json",
-    "Authorization": token ? `Bearer ${token}` : "",
-    // Ces deux clés sont définies dans .env.local
-    "x-api-key":    process.env.NEXT_PUBLIC_API_KEY    ?? "",
-    "x-client-id":  process.env.NEXT_PUBLIC_CLIENT_ID  ?? "",
+    Authorization: token ? `Bearer ${token}` : "",
+    "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
+    "x-client-id": process.env.NEXT_PUBLIC_CLIENT_ID ?? "",
   };
 }
 
-export async function login(email: string, password: string): Promise<string> {
-  const res = await fetch(`${NESTJS}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key":   process.env.NEXT_PUBLIC_API_KEY   ?? "",
-      "x-client-id": process.env.NEXT_PUBLIC_CLIENT_ID ?? "",
-    },
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.message ?? `Login échoué (${res.status})`);
-  }
-
-  const { access_token } = await res.json();
-  localStorage.setItem(TOKEN_KEY, access_token);
-  return access_token;
+// Déclenche le flow OIDC ZITADEL (redirect)
+export async function login(): Promise<void> {
+  await signIn("zitadel", { callbackUrl: "/overview" });
 }
 
-export function logout() {
-  localStorage.removeItem(TOKEN_KEY);
-  // pas de redirect ici — à gérer côté composant
+// Déconnexion : vide localStorage + signOut next-auth
+export async function logout(): Promise<void> {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+  await signOut({ callbackUrl: "/login" });
 }
 
 export function getToken(): string | null {
@@ -52,11 +43,8 @@ export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-// hook pour savoir si on est connecté côté composant
+// Hook React : indique si l'utilisateur est connecté
 export function useIsAuthenticated(): boolean {
-  const [auth, setAuth] = useState(false);
-  useEffect(() => {
-    setAuth(!!localStorage.getItem(TOKEN_KEY));
-  }, []);
-  return auth;
+  const { data: session, status } = useSession();
+  return status === "authenticated" && !!session;
 }

@@ -6,6 +6,22 @@ COPY package.json package-lock.json* ./
 RUN npm install
 
 COPY . .
+
+# Variables NEXT_PUBLIC_* bakées au build (disponibles côté client)
+ARG NEXT_PUBLIC_USE_MOCK=true
+ARG NEXT_PUBLIC_NESTJS_URL=http://localhost:3001
+ARG NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
+ARG NEXT_PUBLIC_API_KEY=""
+ARG NEXT_PUBLIC_CLIENT_ID=healthai-admin-front
+ARG NEXT_PUBLIC_METABASE_URL=http://localhost:3002
+
+ENV NEXT_PUBLIC_USE_MOCK=$NEXT_PUBLIC_USE_MOCK
+ENV NEXT_PUBLIC_NESTJS_URL=$NEXT_PUBLIC_NESTJS_URL
+ENV NEXT_PUBLIC_FASTAPI_URL=$NEXT_PUBLIC_FASTAPI_URL
+ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
+ENV NEXT_PUBLIC_CLIENT_ID=$NEXT_PUBLIC_CLIENT_ID
+ENV NEXT_PUBLIC_METABASE_URL=$NEXT_PUBLIC_METABASE_URL
+
 RUN npm run build
 
 # ─── Runner ──────────────────────────────────────────────────────────────────

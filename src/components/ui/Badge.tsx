@@ -10,9 +10,9 @@ interface BadgeProps {
 
 const VARIANT_STYLES: Record<BadgeVariant, string> = {
   default: "bg-secondary text-secondary-foreground",
-  success: "bg-success/15 text-success border border-success/30",
-  warning: "bg-warning/15 text-warning border border-warning/30",
-  destructive: "bg-destructive/15 text-destructive border border-destructive/30",
+  success: "bg-success text-success-foreground",
+  warning: "bg-warning text-warning-foreground",
+  destructive: "bg-destructive text-destructive-foreground",
   outline: "border border-border text-muted-foreground",
   running: "bg-primary/15 text-primary border border-primary/30",
 };

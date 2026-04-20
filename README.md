@@ -94,38 +94,55 @@ npm run build
 npm run start
 ```
 
+## Variables d'environnement
+
+```env
+# Auth ZITADEL (next-auth)
+AUTH_SECRET=<openssl rand -base64 32>
+AUTH_URL=http://localhost:3000
+ZITADEL_ISSUER=http://localhost:8080
+ZITADEL_CLIENT_ID=<client_id_app_web_zitadel>
+ZITADEL_CLIENT_SECRET=<client_secret>
+
+# API NestJS
+NEXT_PUBLIC_NESTJS_URL=http://localhost:3001
+NEXT_PUBLIC_API_KEY=<api_key>
+NEXT_PUBLIC_CLIENT_ID=healthai-admin-front
+
+# ETL FastAPI
+NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
+
+# Mode mock (développement sans backend)
+NEXT_PUBLIC_USE_MOCK=false
+
+# Metabase
+NEXT_PUBLIC_METABASE_URL=http://localhost:3002
+```
+
 ## Docker
 
 ```bash
-# Build et démarrage
-docker compose up --build
+# Via healthai-infra (recommandé)
+docker compose up -d healthai-admin
 
-# Le frontend tourne sur le réseau healthai-network
-# partagé avec le backend NestJS et Metabase
+# Build local
+docker build \
+  --build-arg NEXT_PUBLIC_USE_MOCK=false \
+  --build-arg NEXT_PUBLIC_NESTJS_URL=http://localhost:3001 \
+  --build-arg NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000 \
+  -t healthai-admin:local .
 ```
 
-> ⚠️ Créer le réseau Docker au préalable si besoin :
-> `docker network create healthai-network`
+> Les variables `NEXT_PUBLIC_*` sont injectées **au moment du build** via `ARG/ENV` dans le Dockerfile.  
+> Changer ces valeurs après le build nécessite un rebuild de l'image.
 
 ## Connexion à l'API NestJS
 
-Les données sont actuellement mockées dans `src/lib/mock-data.ts`.
+Le mode mock est contrôlé par la variable de build `NEXT_PUBLIC_USE_MOCK` :
 
-Pour brancher l'API réelle, modifier `src/lib/hooks/useApi.ts` :
-
-```ts
-// Avant (mock)
-async function fetchUsers(): Promise<User[]> {
-  await new Promise((r) => setTimeout(r, 300));
-  return MOCK_USERS;
-}
-
-// Après (API réelle)
-async function fetchUsers(): Promise<User[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`);
-  if (!res.ok) throw new Error("Erreur fetch users");
-  return res.json();
-}
+```env
+NEXT_PUBLIC_USE_MOCK=false   # API réelle (production)
+NEXT_PUBLIC_USE_MOCK=true    # Données fictives (développement sans backend)
 ```
 
 ## Intégration Metabase
