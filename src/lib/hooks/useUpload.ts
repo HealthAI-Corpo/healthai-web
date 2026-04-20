@@ -8,18 +8,25 @@ import Papa from "papaparse";
 const ETL_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? "http://localhost:8000";
 
 // envoie un fichier brut vers l'ETL FastAPI
-export async function uploadFichier(fichier: File): Promise<{ saved: string; size: number }> {
+export async function uploadFichier(fichier: File, pipeline?: string): Promise<{ saved: string; size: number }> {
   const form = new FormData();
   form.append("file", fichier);
 
   const res = await fetch(`${ETL_URL}/upload`, {
     method: "POST",
     body: form,
-    // pas de Content-Type ici — le navigateur le met automatiquement avec le boundary
   });
 
   if (!res.ok) throw new Error(`Upload échoué (${res.status})`);
-  return res.json();
+  const result = await res.json();
+
+  await fetch(`${ETL_URL}/run-all`, { method: "POST" });
+
+  // déclenche le pipeline automatiquement après l'upload
+  const triggerRes = await fetch(`${ETL_URL}/run-all`, { method: "POST" });
+  if (!triggerRes.ok) console.warn("Pipeline non déclenché", triggerRes.status);
+
+  return result;
 }
 
 // reconstruit un CSV depuis un tableau d'objets et l'envoie à l'ETL

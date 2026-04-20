@@ -16,20 +16,40 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install --prefer-offline
+      - run: npm install --prefer-offline --legacy-peer-deps
       - run: npm run lint
 
   test:
-    name: Playwright e2e
+    name: Vitest
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm install --prefer-offline
+      - run: npm install --prefer-offline --legacy-peer-deps
+      - run: npm run test
+
+  e2e:
+    name: Playwright e2e
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      AUTH_SECRET: ci-test-secret-not-used-in-production
+      SKIP_AUTH: "true"
+      NEXT_PUBLIC_USE_MOCK: "true"
+      # Valeurs factices pour satisfaire l'init next-auth (jamais appelées en CI)
+      ZITADEL_ISSUER: https://ci-dummy.zitadel.cloud
+      ZITADEL_CLIENT_ID: ci-dummy-client-id
+      ZITADEL_CLIENT_SECRET: ci-dummy-client-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install --prefer-offline --legacy-peer-deps
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
 
@@ -58,3 +78,8 @@ jobs:
             ghcr.io/healthai-corpo/healthai-admin:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            ZITADEL_ISSUER=${{ secrets.ZITADEL_ISSUER }}
+            ZITADEL_CLIENT_ID=${{ secrets.ZITADEL_CLIENT_ID }}
+            ZITADEL_CLIENT_SECRET=${{ secrets.ZITADEL_CLIENT_SECRET }}
