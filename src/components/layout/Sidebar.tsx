@@ -50,16 +50,12 @@ export function Sidebar() {
       aria-label="Navigation principale"
     >
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 border-b border-border px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground" aria-hidden="true">
-          <Activity className="h-4 w-4" />
-        </div>
-        <div>
-          <span className={cn("font-display font-semibold text-foreground", isLowVision ? "text-base" : "text-sm")}>
-            HealthAI Coach
-          </span>
-          <p className="text-[10px] text-muted-foreground">Admin Platform</p>
-        </div>
+      <div className="flex h-16 items-center border-b border-border px-6">
+        <img
+          src="/wessim_logo-black.png"
+          alt="HealthAI Coach"
+          className="h-8 w-auto"
+        />
       </div>
 
       {/* Navigation */}
