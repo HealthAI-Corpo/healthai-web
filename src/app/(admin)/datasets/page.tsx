@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AlertTriangle, CheckCircle2, Eye } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
@@ -51,6 +51,8 @@ const TABS = [
   { id: "anomalies", label: "Anomalies ETL",    desc: "Logs ETL · table etl_log" },
 ];
 
+
+
 // ─── Hook générique éditable ──────────────────────────────────────────────────
 
 function useEditableDataset<T extends { id: string }>(initialData: T[] | undefined) {
@@ -99,6 +101,11 @@ export default function DatasetsPage() {
   const nutrition = useEditableDataset<NutritionEntry>(nutritionData as unknown as NutritionEntry[]);
   const exercises = useEditableDataset<Exercise>(exercisesData as unknown as Exercise[]);
   const diet      = useEditableDataset<DietRecommendation>(dietData as unknown as DietRecommendation[]);
+
+  useEffect(() => { if (usersData)     users.init(usersData as unknown as User[]); },                 [usersData]);
+  useEffect(() => { if (nutritionData) nutrition.init(nutritionData as unknown as NutritionEntry[]); }, [nutritionData]);
+  useEffect(() => { if (exercisesData) exercises.init(exercisesData as unknown as Exercise[]); },      [exercisesData]);
+  useEffect(() => { if (dietData)      diet.init(dietData as unknown as DietRecommendation[]); },      [dietData]);
 
   const markInspected = (id: string) => setInspected((p) => ({ ...p, [id]: true }));
 
