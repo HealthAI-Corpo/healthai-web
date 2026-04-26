@@ -187,14 +187,33 @@ export function useKpis() {
     queryKey: ["kpis"],
     queryFn: async (): Promise<DashboardKpis> => {
       if (USE_MOCK) { await pause(150); return MOCK_KPIS as unknown as DashboardKpis; }
-      // pas encore d'endpoint /analytics dans NestJS — fallback mock en attendant
-      // TODO: return nestFetch<DashboardKpis>("/analytics/kpis");
-      return MOCK_KPIS as unknown as DashboardKpis;
+      
+      // Récupère les vraies données depuis NestJS
+      const [users, aliments, exercices] = await Promise.all([
+        nestFetch<Utilisateur[]>("/utilisateurs"),
+        nestFetch<Aliment[]>("/aliments"),
+        nestFetch<Exercice[]>("/exercices"),
+      ]);
+
+      const total = users.length;
+      const premium = users.filter(u => u.typeAbonnement && u.typeAbonnement !== ("Freemium" as any)).length;
+      const avgCalories = aliments.length > 0
+        ? Math.round(aliments.reduce((s, a) => s + (a.calories ?? 0), 0) / aliments.length)
+        : 0;
+
+      return {
+        total_users: total,
+        active_users_last_30d: Math.round(total * 0.72), // approximation
+        premium_conversion_rate: total > 0 ? (premium / total) * 100 : 0,
+        data_quality_score: 94, // mocké — pas d'endpoint ETL
+        avg_session_duration_hours: 1.3, // mocké
+        avg_calories_burned: avgCalories,
+        error_rate_percent: 1.2, // mocké
+      } as unknown as DashboardKpis;
     },
     refetchInterval: 60 * 1000,
   });
 }
-
 // ════════════════════════════════════════════════════════════════════════════════
 // HOOKS FastAPI ETL
 // ════════════════════════════════════════════════════════════════════════════════
@@ -206,10 +225,8 @@ export function usePipelineRuns() {
   return useQuery({
     queryKey: ["pipeline-runs"],
     queryFn: async (): Promise<PipelineRun[]> => {
-      if (USE_MOCK) { await pause(200); return MOCK_PIPELINE_RUNS as PipelineRun[]; }
-      // vérifie juste que l'ETL répond
-      await etlFetch<{ status: string }>("/health");
-      // TODO: return etlFetch<PipelineRun[]>("/runs") quand l'endpoint sera dispo
+      // Toujours mock — ETL n'expose pas encore /runs
+      await pause(200);
       return MOCK_PIPELINE_RUNS as PipelineRun[];
     },
     refetchInterval: 30 * 1000,
@@ -223,8 +240,17 @@ export function useDataQuality() {
     queryKey: ["data-quality"],
     queryFn: async (): Promise<RapportQualite[]> => {
       if (USE_MOCK) { await pause(200); return MOCK_DATA_QUALITY as RapportQualite[]; }
-      // TODO: return etlFetch<RapportQualite[]>("/quality/reports");
-      return MOCK_DATA_QUALITY as RapportQualite[];
+      const logs = await nestFetch<any[]>("/etl-log");
+      return logs.map(log => ({
+        dataset: log.libellePipeline,
+        source_file: log.fichierNom,
+        total_rows: log.nbLignesTotal,
+        valid_rows: log.nbLignesValides,
+        missing_values: 0,
+        duplicates: 0,
+        outliers: log.nbLignesAnomalies,
+        last_checked_at: log.dateExecution,
+      }));
     },
     staleTime: 10 * 60 * 1000,
   });
