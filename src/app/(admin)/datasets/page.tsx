@@ -334,10 +334,10 @@ export default function DatasetsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {(quality ?? []).map((d) => {
+              {(quality ?? []).map((d,i) => {
                 const score = d.total_rows > 0 ? Math.round((d.valid_rows / d.total_rows) * 100) : 0;
                 return (
-                  <div key={d.dataset} className="rounded-lg border border-border p-4">
+                  <div key={`${d.dataset}-${d.source_file}-${i}`} className="rounded-lg border border-border p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 flex-wrap">

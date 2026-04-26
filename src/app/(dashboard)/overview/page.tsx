@@ -11,6 +11,8 @@ import { KpiCardSkeleton, ChartSkeleton } from "@/components/ui/Skeleton";
 import { useKpis, usePipelineRuns, useDataQuality } from "@/lib/hooks/useApi";
 import { MOCK_MONTHLY_PROGRESSION } from "@/lib/mock-data";
 import { formatNumber, formatPercent, formatDate, formatDuration } from "@/lib/utils";
+import { MetabaseEmbed } from "@/app/(dashboard)/analytics/components/metabaseEmbed";
+
 
 export default function OverviewPage() {
   const { data: kpis, isLoading: kpisLoading } = useKpis();
@@ -70,40 +72,10 @@ export default function OverviewPage() {
             <Card>
               <CardHeader>
                 <CardTitle id="growth-title">Croissance utilisateurs</CardTitle>
-                <CardDescription>Progression mensuelle — total, actifs et premium</CardDescription>
+                <CardDescription>Dashboard Metabase — données réelles BDD</CardDescription>
               </CardHeader>
               <CardContent>
-                <div role="img" aria-label="Graphique de croissance mensuelle des utilisateurs">
-                  <ResponsiveContainer width="100%" height={260}>
-                    <AreaChart data={MOCK_MONTHLY_PROGRESSION} margin={{ top: 4, right: 4, bottom: 0, left: -10 }}>
-                      <defs>
-                        <linearGradient id="gUsers" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(171,72%,28%)" stopOpacity={0.15} />
-                          <stop offset="95%" stopColor="hsl(171,72%,28%)" stopOpacity={0} />
-                        </linearGradient>
-                        <linearGradient id="gActive" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(142,60%,45%)" stopOpacity={0.12} />
-                          <stop offset="95%" stopColor="hsl(142,60%,45%)" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,88%)" />
-                      <XAxis dataKey="month" tick={{ fontSize: 12, fill: "hsl(220,10%,50%)" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12, fill: "hsl(220,10%,50%)" }} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={{ background: "hsl(0,0%,100%)", border: "1px solid hsl(220,13%,88%)", borderRadius: "8px", fontSize: "12px" }} />
-                      <Area type="monotone" dataKey="users" name="Total" stroke="hsl(171,72%,28%)" strokeWidth={2} fill="url(#gUsers)" />
-                      <Area type="monotone" dataKey="active" name="Actifs" stroke="hsl(142,60%,45%)" strokeWidth={2} fill="url(#gActive)" />
-                      <Area type="monotone" dataKey="premium" name="Premium" stroke="hsl(38,95%,55%)" strokeWidth={2} fill="none" strokeDasharray="4 2" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-3 flex gap-6" aria-label="Légende">
-                  {[["hsl(171,72%,28%)", "Total"], ["hsl(142,60%,45%)", "Actifs"], ["hsl(38,95%,55%)", "Premium"]].map(([c, l]) => (
-                    <span key={l} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="h-2 w-4 rounded-full" style={{ background: c }} aria-hidden="true" />
-                      {l}
-                    </span>
-                  ))}
-                </div>
+                <MetabaseEmbed dashboardId={8} height={280} />
               </CardContent>
             </Card>
           </section>
@@ -157,10 +129,10 @@ export default function OverviewPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(quality ?? []).map((row) => {
+                    {(quality ?? []).map((row, index) => {
                       const score = row.total_rows > 0 ? Math.round((row.valid_rows / row.total_rows) * 100) : 0;
                       return (
-                        <tr key={row.dataset} className="border-b border-border/50 last:border-0">
+                        <tr key={`${row.dataset}-${index}`} className="border-b border-border/50 last:border-0">
                           <td className="py-3 pr-4 font-medium text-foreground text-xs">{row.dataset}</td>
                           <td className="py-3 pr-4 font-mono text-[11px] text-muted-foreground">{row.source_file}</td>
                           <td className="py-3 pr-4 text-muted-foreground">{formatNumber(row.total_rows)}</td>
