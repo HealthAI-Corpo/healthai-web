@@ -37,7 +37,7 @@ export function MetabaseEmbed({ dashboardId, height = 500 }: Props) {
       src={url}
       style={{ height }}
       className="w-full rounded-lg border-0"
-      allowTransparency
+      allowTransparency={true}
       title={`Dashboard Metabase ${dashboardId}`}
     />
   );
