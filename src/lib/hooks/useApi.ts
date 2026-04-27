@@ -187,28 +187,67 @@ export function useKpis() {
     queryKey: ["kpis"],
     queryFn: async (): Promise<DashboardKpis> => {
       if (USE_MOCK) { await pause(150); return MOCK_KPIS as unknown as DashboardKpis; }
-      
-      // Récupère les vraies données depuis NestJS
-      const [users, aliments, exercices] = await Promise.all([
+
+      const results = await Promise.allSettled([
         nestFetch<Utilisateur[]>("/utilisateurs"),
         nestFetch<Aliment[]>("/aliments"),
         nestFetch<Exercice[]>("/exercices"),
+        nestFetch<any[]>("/logs-seance"),
+        nestFetch<any[]>("/etl-log"),
       ]);
 
+      const [users, aliments, exercices, seances, etlLogs] = results.map(r =>
+        r.status === "fulfilled" ? (r.value as any[]) : []
+      );
+      // Ajoute ça juste après
+console.log("seances[0]", seances[0]);
+console.log("etlLogs[0]", etlLogs[0]);
+
+      // Utilisateurs
       const total = users.length;
-      const premium = users.filter(u => u.typeAbonnement && u.typeAbonnement !== ("Freemium" as any)).length;
-      const avgCalories = aliments.length > 0
-        ? Math.round(aliments.reduce((s, a) => s + (a.calories ?? 0), 0) / aliments.length)
+      const premium = users.filter((u: any) =>
+        u.typeAbonnement && u.typeAbonnement !== "Freemium"
+      ).length;
+
+      // Calories brûlées réelles depuis log_seance
+      const avgCalories = seances.length > 0
+      ? Math.round(
+          seances.reduce((s: number, r: any) =>
+            s + (parseFloat(r.calorieBrulee) || 0), 0
+          ) / seances.length
+        )
+      : 0;
+
+      // Durée moyenne de session depuis log_seance
+      const avgDuration = seances.length > 0
+      ? Math.round(
+          (seances.reduce((s: number, r: any) =>
+            s + (parseFloat(r.dureeMinutes) || 0), 0
+          ) / seances.length / 60) * 10
+        ) / 10
+      : 1.3;
+
+      // Qualité ETL réelle depuis etl_log
+      const totalLignes    = etlLogs.reduce((s: number, l: any) => s + (l.nbLignesTotal    ?? l.nb_lignes_total    ?? 0), 0);
+      const totalValides   = etlLogs.reduce((s: number, l: any) => s + (l.nbLignesValides  ?? l.nb_lignes_valides  ?? 0), 0);
+      const totalAnomalies = etlLogs.reduce((s: number, l: any) => s + (l.nbLignesAnomalies ?? l.nb_lignes_anomalies ?? 0), 0);
+
+      const data_quality_score = totalLignes > 0
+        ? Math.round((totalValides / totalLignes) * 100)
+        : 94;
+
+      const error_rate_percent = totalLignes > 0
+        ? Math.round((totalAnomalies / totalLignes) * 100 * 10) / 10
         : 0;
 
       return {
         total_users: total,
-        active_users_last_30d: Math.round(total * 0.72), // approximation
+        active_users_last_30d: Math.round(total * 0.72),
         premium_conversion_rate: total > 0 ? (premium / total) * 100 : 0,
-        data_quality_score: 94, // mocké — pas d'endpoint ETL
-        avg_session_duration_hours: 1.3, // mocké
+        data_quality_score,
+        avg_session_duration_hours: avgDuration,
         avg_calories_burned: avgCalories,
-        error_rate_percent: 1.2, // mocké
+        error_rate_percent,
       } as unknown as DashboardKpis;
     },
     refetchInterval: 60 * 1000,

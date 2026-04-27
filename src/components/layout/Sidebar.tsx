@@ -55,8 +55,8 @@ export function Sidebar() {
         <Image
           src="/wessim_logo-black.png"
           alt="HealthAI Coach"
-          width={32}
-          height={32}
+          width={762}
+          height={206}
           className="h-8 w-auto"
         />
       </div>
