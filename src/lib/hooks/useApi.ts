@@ -189,10 +189,9 @@ export function useKpis() {
       if (USE_MOCK) { await pause(150); return MOCK_KPIS as unknown as DashboardKpis; }
       
       // Récupère les vraies données depuis NestJS
-      const [users, aliments, exercices] = await Promise.all([
+      const [users, aliments] = await Promise.all([
         nestFetch<Utilisateur[]>("/utilisateurs"),
         nestFetch<Aliment[]>("/aliments"),
-        nestFetch<Exercice[]>("/exercices"),
       ]);
 
       const total = users.length;
@@ -218,16 +217,33 @@ export function useKpis() {
 // HOOKS FastAPI ETL
 // ════════════════════════════════════════════════════════════════════════════════
 
-// Historique des runs pipeline
-// GET /health pour l'instant (ETL pas encore d'endpoint /runs)
-// On garde les mocks jusqu'à ce que l'ETL expose l'historique
+const PIPELINE_NAME_MAP: Record<string, string> = {
+  dataset_recommendations_regime: "Import Diet Recommendations",
+  aliment: "Import Daily Food & Nutrition",
+  dataset_historique_seance_exercice: "Import Gym Members Dataset",
+  dataset_historique_seance_exercice_synthetic_data: "Import Gym Synthetic Dataset",
+  exercice: "Import ExerciseDB (JSON)",
+};
+
+// Historique des runs pipeline — NestJS GET /etl-log (en mode réel)
 export function usePipelineRuns() {
   return useQuery({
     queryKey: ["pipeline-runs"],
     queryFn: async (): Promise<PipelineRun[]> => {
-      // Toujours mock — ETL n'expose pas encore /runs
-      await pause(200);
-      return MOCK_PIPELINE_RUNS as PipelineRun[];
+      if (USE_MOCK) { await pause(200); return MOCK_PIPELINE_RUNS as PipelineRun[]; }
+      const logs = await nestFetch<any[]>("/etl-log");
+      return logs.map(log => ({
+        id: String(log.idEtlLog),
+        name: PIPELINE_NAME_MAP[log.libellePipeline] ?? log.libellePipeline,
+        source: (log.fichierNom?.endsWith(".json") ? "json" : "csv") as "csv" | "json",
+        dataset_file: log.fichierNom,
+        status: (log.statut === "SUCCESS" ? "success" : log.statut === "ERROR" ? "error" : log.statut === "PARTIAL_FAILURE" ? "error" : "idle") as "success" | "error" | "idle" | "running",
+        started_at: log.dateExecution,
+        finished_at: log.dateExecution,
+        rows_ingested: log.nbLignesValides,
+        rows_rejected: log.nbLignesAnomalies,
+        error_message: log.statut === "ERROR" ? log.message : undefined,
+      }));
     },
     refetchInterval: 30 * 1000,
   });
