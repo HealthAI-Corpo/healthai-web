@@ -37,7 +37,7 @@ const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function nestFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${NESTJS}${path}`, {
     ...options,
-    headers: { ...getAuthHeaders(), ...options?.headers },
+    headers: {"Content-Type": "application/json", ...getAuthHeaders(), ...options?.headers },
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -365,6 +365,44 @@ export function useUpdateExercice() {
       });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["exercises"] }),
+  });
+}
+
+export function useDeleteExercice() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (idExercice: number) => {
+      if (USE_MOCK) { await pause(300); return; }
+      await nestFetch(`/exercices/${idExercice}`, { method: "DELETE" });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["exercises"] }),
+  });
+}
+
+export function useUpdateDiet() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: Partial<RecommandationRegime> & { id: number }) => {
+      if (USE_MOCK) { await pause(400); return payload; }
+      return nestFetch(`/datasets/recommandations-regime/${payload.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["diet-recommendations"] }),
+  });
+}
+
+export function useDeleteDiet() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      if (USE_MOCK) { await pause(300); return; }
+      await nestFetch(`/datasets/recommandations-regime/${id}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["diet-recommendations"] }),
   });
 }
 
