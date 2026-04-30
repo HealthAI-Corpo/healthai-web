@@ -74,8 +74,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/healthai-corpo/healthai-admin:latest
-            ghcr.io/healthai-corpo/healthai-admin:${{ github.sha }}
+            ghcr.io/healthai-corpo/healthai-web:latest
+            ghcr.io/healthai-corpo/healthai-web:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
