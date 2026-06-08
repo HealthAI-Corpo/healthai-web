@@ -7,15 +7,7 @@ import {
   Card, CardHeader, CardTitle, CardDescription, CardContent,
 } from "@/components/ui/Card";
 import { MetabaseEmbed } from "@/app/(dashboard)/analytics/components/metabaseEmbed";
-import {
-  analyzePhoto,
-  requestAdvice,
-  getConsumption,
-  requestSuggestion,
-  getSuggestion,
-  validateSuggestion,
-  pollUntilDone,
-} from "@/lib/api/nutrition";
+import { analyzePhoto, requestAdvice, getConsumption, requestSuggestion, getSuggestion, validateSuggestion, pollUntilDone,} from "@/lib/api/nutrition";
 
 // Mock — remplacer par useSession() en prod
 const USER_ID = 1;
@@ -51,6 +43,9 @@ interface SuggestionResult {
 
 // ── Composant Upload photo ────────────────────────────────────────────────────
 
+const MAX_SIZE_MB = 25;
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
 function MealPhotoUpload({
   onFile,
   loading,
@@ -61,62 +56,101 @@ function MealPhotoUpload({
   const ref = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handle = (file: File) => {
-    setPreview(URL.createObjectURL(file));
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setUploadError("Format non supporté. Utilisez JPG, PNG ou WEBP.");
+      return;
+    }
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      setUploadError(`Fichier trop volumineux (max ${MAX_SIZE_MB} Mo).`);
+      return;
+    }
+    setUploadError(null);
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
     onFile(file);
   };
 
   return (
-    <div
-      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handle(f); }}
-      onClick={() => ref.current?.click()}
-      onKeyDown={(e) => e.key === "Enter" && ref.current?.click()}
-      role="button"
-      tabIndex={0}
-      aria-label="Déposer ou sélectionner une photo de repas"
-      className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-        dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-muted/30"
-      }`}
-    >
-      <input
-        ref={ref}
-        type="file"
-        accept="image/*"
-        className="sr-only"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) handle(f); }}
-        aria-label="Sélectionner une photo de repas"
-      />
+    <>
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          const f = e.dataTransfer.files[0];
+          if (f) handle(f);
+        }}
+        onClick={() => ref.current?.click()}
+        onKeyDown={(e) => e.key === "Enter" && ref.current?.click()}
+        role="button"
+        tabIndex={0}
+        aria-label="Déposer ou sélectionner une photo de repas"
+        className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+          dragging
+            ? "border-primary bg-primary/5"
+            : "border-border hover:border-primary/50 hover:bg-muted/30"
+        }`}
+      >
+        <input
+          ref={ref}
+          type="file"
+          accept={ALLOWED_TYPES.join(",")}   // cohérent avec la validation
+          className="sr-only"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handle(f);
+            // Reset pour permettre re-sélection du même fichier
+            e.target.value = "";
+          }}
+          aria-label="Sélectionner une photo de repas"
+        />
 
-      {preview ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt="Aperçu du repas sélectionné" className="max-h-48 rounded-lg object-cover" />
-      ) : (
-        <>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Upload className="h-6 w-6" aria-hidden="true" />
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-medium text-foreground">Glissez une photo ou cliquez pour parcourir</p>
-            <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP — max 5 Mo</p>
-          </div>
-        </>
-      )}
+        {preview ? (
+          <img
+            src={preview}
+            alt="Aperçu du repas sélectionné"
+            className="max-h-48 rounded-lg object-cover"
+          />
+        ) : (
+          <>
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Upload className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-foreground">
+                Glissez une photo ou cliquez pour parcourir
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                JPG, PNG, WEBP — max {MAX_SIZE_MB} Mo
+              </p>
+            </div>
+          </>
+        )}
 
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-background/80 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-sm text-primary font-medium">
-            <Sparkles className="h-4 w-4 animate-pulse" aria-hidden="true" />
-            Analyse en cours…
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-background/80 backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-sm text-primary font-medium">
+              <Sparkles className="h-4 w-4 animate-pulse" aria-hidden="true" />
+              Analyse en cours…
+            </div>
           </div>
-        </div>
+        )}
+      </div>
+
+      {uploadError && (
+        <p role="alert" className="text-sm text-destructive mt-2">
+          {uploadError}
+        </p>
       )}
-    </div>
+    </>
   );
 }
-
 // ── Page principale ───────────────────────────────────────────────────────────
 
 export default function NutritionPage() {
