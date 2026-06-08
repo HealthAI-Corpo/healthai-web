@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useCallback } from "react";
 import { Upload, Sparkles, CheckCircle } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -112,6 +113,7 @@ function MealPhotoUpload({
         />
 
         {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element -- blob: URL locale, Image() non compatible
           <img
             src={preview}
             alt="Aperçu du repas sélectionné"
