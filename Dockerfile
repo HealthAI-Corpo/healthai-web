@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 
 # Variables NEXT_PUBLIC_* bakées au build (disponibles côté client)
-ARG NEXT_PUBLIC_USE_MOCK=true
+ARG NEXT_PUBLIC_USE_MOCK=false
 ARG NEXT_PUBLIC_NESTJS_URL=http://localhost:3001
 ARG NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
 ARG NEXT_PUBLIC_API_KEY=""
