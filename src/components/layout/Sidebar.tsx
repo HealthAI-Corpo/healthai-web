@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, BarChart3, Database, GitMerge,
   ShieldCheck, Download, Activity, Dumbbell, Apple,
-  Users, ChevronRight, Sun, Moon, Eye, EyeOff,
+  Users, ChevronRight, Sun, Moon, Eye, EyeOff, User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppTheme } from "@/lib/theme";
@@ -55,8 +55,8 @@ export function Sidebar() {
         <Image
           src="/wessim_logo-black.png"
           alt="HealthAI Coach"
-          width={32}
-          height={32}
+          width={762}
+          height={206}
           className="h-8 w-auto"
         />
       </div>
@@ -165,6 +165,16 @@ export function Sidebar() {
             <span className="h-4 w-4 rounded-full bg-white shadow-sm" />
           </span>
         </button>
+      </div>
+
+      <div className="border-t border-border p-4">
+        <Link
+          href="/client/dashboard"
+          className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <User className="h-4 w-4" aria-hidden="true" />
+          Vue client
+        </Link>
       </div>
 
       {/* Footer */}

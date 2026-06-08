@@ -24,6 +24,13 @@ import {
   getUserColumns, getNutritionColumns, getExerciseColumns, getDietColumns,
   USER_FIELDS, NUTRITION_FIELDS, EXERCISE_FIELDS, DIET_FIELDS,
 } from "./components/columns";
+import {
+  useDeleteExercice,
+  useUpdateUser,
+  useDeleteUser,
+  useUpdateDiet,
+  useDeleteDiet
+} from "@/lib/hooks/useApi";
 
 // ── MOCK — ancien code avant refacto (désactivé) ──────────────────────────────
 // Si tu veux repasser en mode mock :
@@ -96,6 +103,12 @@ export default function DatasetsPage() {
   const deleteAliment  = useDeleteAliment();
   const updateExercice = useUpdateExercice();
 
+  const updateUser = useUpdateUser();
+  const deleteUser = useDeleteUser();
+  const deleteExercice = useDeleteExercice();
+  const updateDiet = useUpdateDiet();
+  const deleteDiet = useDeleteDiet();
+
   // Datasets locaux éditables
   const users     = useEditableDataset<User>(usersData as unknown as User[]);
   const nutrition = useEditableDataset<NutritionEntry>(nutritionData as unknown as NutritionEntry[]);
@@ -117,45 +130,93 @@ export default function DatasetsPage() {
   // MOCK : handleSave faisait uniquement updateRow() local, sans appel API
   // MOCK : handleDelete faisait uniquement deleteRow() local, sans appel API
 
-  const handleSave = async (values: Record<string, unknown>) => {
-    const { dataset, row } = editModal;
-    if (!row) return;
-    try {
-      if (dataset === "nutrition" && row.idAliment) {
-        await updateAliment.mutateAsync({ idAliment: Number(row.idAliment), ...values } as Partial<Aliment> & { idAliment: number });
-        nutrition.updateRow(row.id as string, values as Partial<NutritionEntry>);
-      } else if (dataset === "exercises" && row.idExercice) {
-        await updateExercice.mutateAsync({ idExercice: Number(row.idExercice), ...values } as Partial<Exercice> & { idExercice: number });
-        exercises.updateRow(row.id as string, values as Partial<Exercise>);
-      } else {
-        if (dataset === "users") users.updateRow(row.id as string, values as Partial<User>);
-        if (dataset === "diet")  diet.updateRow(row.id as string, values as Partial<DietRecommendation>);
-      }
-      toast("success", "Ligne mise à jour ✓");
-    } catch {
-      toast("error", "Erreur lors de la mise à jour");
+const handleSave = async (values: Record<string, unknown>) => {
+  const { dataset, row } = editModal;
+  if (!row) return;
+
+  console.log("row complet :", row);
+  console.log("dataset :", dataset);
+
+  try {
+    if (dataset === "users" && row.idUtilisateur) {
+      const { idUtilisateur, id, name, plan, motDePasseHash, dateInscription, ...cleanValues } = values as Record<string, unknown>;
+      console.log("PATCH vers NestJS :", `/utilisateurs/${row.idUtilisateur}`, cleanValues);
+      await updateUser.mutateAsync({
+        idUtilisateur: Number(row.idUtilisateur),
+        ...cleanValues,
+      });
+      users.updateRow(row.id as string, cleanValues as Partial<User>);
     }
-    setEditModal({ open: false, row: null, dataset: "" });
-  };
+
+    else if (dataset === "nutrition" && row.idAliment) {
+      const { idAliment, id, food_item, calories_kcal, protein_g, carbohydrates_g, fat_g, meal_type, ...cleanValues } = values as Record<string, unknown>;
+      await updateAliment.mutateAsync({
+        idAliment: Number(row.idAliment),
+        ...cleanValues,
+      });
+      nutrition.updateRow(row.id as string, cleanValues as Partial<NutritionEntry>);
+    }
+
+    else if (dataset === "exercises" && row.idExercice) {
+      const { idExercice, id, name, level, primary_muscles, category, ...cleanValues } = values as Record<string, unknown>;
+      await updateExercice.mutateAsync({
+        idExercice: Number(row.idExercice),
+        ...cleanValues,
+      });
+      exercises.updateRow(row.id as string, cleanValues as Partial<Exercise>);
+    }
+
+    else if (dataset === "diet") {
+      const { idDatasetRecommandationsRegime, id, disease_type, severity, daily_caloric_intake, diet_recommendation, ...cleanValues } = values as Record<string, unknown>;
+      await updateDiet.mutateAsync({
+        id: Number(row.idDatasetRecommandationsRegime ?? row.id),
+        ...cleanValues,
+      });
+      diet.updateRow(row.id as string, cleanValues as Partial<DietRecommendation>);
+    }
+
+    toast("success", "Ligne mise à jour ✓");
+
+  } catch (err) {
+    console.error("Erreur handleSave :", err);
+    toast("error", err instanceof Error ? err.message : "Erreur lors de la mise à jour");
+  }
+
+  setEditModal({ open: false, row: null, dataset: "" });
+};
 
   const handleDelete = async () => {
-    const { id, label, dataset } = deleteModal;
-    try {
-      if (dataset === "nutrition") {
-        await deleteAliment.mutateAsync(Number(id));
-        nutrition.deleteRow(id);
-        toast("success", `«${label}» supprimé`);
-      } else {
-        if (dataset === "users")     users.deleteRow(id);
-        if (dataset === "exercises") exercises.deleteRow(id);
-        if (dataset === "diet")      diet.deleteRow(id);
-        toast("warning", `«${label}» supprimé localement`);
-      }
-    } catch {
-      toast("error", "Erreur lors de la suppression");
+  const { id, label, dataset } = deleteModal;
+
+  try {
+    if (dataset === "users") {
+      await deleteUser.mutateAsync(Number(id));
+      users.deleteRow(id);
     }
-    setDeleteModal({ open: false, id: "", label: "", dataset: "" });
-  };
+
+    else if (dataset === "nutrition") {
+      await deleteAliment.mutateAsync(Number(id));
+      nutrition.deleteRow(id);
+    }
+
+    else if (dataset === "exercises") {
+      await deleteExercice.mutateAsync(Number(id));
+      exercises.deleteRow(id);
+    }
+
+    else if (dataset === "diet") {
+      await deleteDiet.mutateAsync(Number(id));
+      diet.deleteRow(id);
+    }
+
+    toast("success", `«${label}» supprimé`);
+
+  } catch {
+    toast("error", "Erreur lors de la suppression");
+  }
+
+  setDeleteModal({ open: false, id: "", label: "", dataset: "" });
+};
 
   // ── Callbacks colonnes ────────────────────────────────────────────────────────
 
