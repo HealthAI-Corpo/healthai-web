@@ -59,6 +59,7 @@ function ExerciceCard({
           )}
         </div>
         <button
+          type="button"
           onClick={() => { setOpen(!open); if (!open && !explanation) onExplain(ex); }}
           aria-label={`Voir explication de ${ex.nom}`}
           className="shrink-0 text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
@@ -210,6 +211,7 @@ export default function SportPage() {
 
                 <div className="flex flex-col gap-2">
                   <button
+                    type="button"
                     onClick={handleGenerate}
                     disabled={loading}
                     aria-busy={loading}
@@ -219,6 +221,7 @@ export default function SportPage() {
                     {loading ? "L'IA génère votre séance…" : "Générer une séance IA"}
                   </button>
                   <button
+                    type="button"
                     onClick={handleRecommendation}
                     disabled={loading}
                     className="w-full rounded-lg border border-primary bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -266,9 +269,9 @@ export default function SportPage() {
                     </div>
 
                     <div className="space-y-2">
-                      {session.exercices.map((ex, i) => (
+                      {session.exercices.map((ex) => (
                         <ExerciceCard
-                          key={i}
+                          key={ex.nom}
                           ex={ex}
                           onExplain={handleExplain}
                           explanation={explanations[ex.nom]}
@@ -287,6 +290,7 @@ export default function SportPage() {
                       </div>
                     ) : (
                       <button
+                        type="button"
                         onClick={handleSave}
                         disabled={saving}
                         aria-busy={saving}

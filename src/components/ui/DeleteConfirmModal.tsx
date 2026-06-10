@@ -55,6 +55,7 @@ export function DeleteConfirmModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Annuler la suppression"
             className="rounded-lg p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

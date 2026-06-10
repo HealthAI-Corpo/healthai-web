@@ -92,6 +92,7 @@ export function EditRowModal({
             {title}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Fermer la fenêtre d'édition"
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

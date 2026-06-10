@@ -289,8 +289,8 @@ export default function NutritionPage() {
                         Aliments détectés
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {macroResult.detections.map((d, i) => (
-                          <span key={i} className="rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium">
+                        {macroResult.detections.map((d) => (
+                          <span key={d.name} className="rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium">
                             {d.name} ({Math.round(d.confidence * 100)}%)
                           </span>
                         ))}
@@ -315,6 +315,7 @@ export default function NutritionPage() {
                     {/* Bouton conseil IA */}
                     {!advice && (
                       <button
+                        type="button"
                         onClick={handleAdvice}
                         disabled={adviceLoading}
                         className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -362,6 +363,7 @@ export default function NutritionPage() {
 
                 {!suggestion && !suggLoading && (
                   <button
+                    type="button"
                     onClick={handleSuggest}
                     className="w-full rounded-lg border border-primary bg-primary/5 px-4 py-3 text-sm font-medium text-primary hover:bg-primary/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
@@ -392,6 +394,7 @@ export default function NutritionPage() {
                         <p className="text-xs text-muted-foreground mt-0.5">{suggestion.estimation_calories}</p>
                       </div>
                       <button
+                        type="button"
                         onClick={handleSuggest}
                         className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                       >
@@ -404,8 +407,8 @@ export default function NutritionPage() {
                         Ingrédients
                       </p>
                       <ul className="space-y-1" aria-label="Liste des ingrédients">
-                        {suggestion.ingredients.map((ing, i) => (
-                          <li key={i} className="flex items-center gap-2 text-sm text-foreground">
+                        {suggestion.ingredients.map((ing) => (
+                          <li key={ing} className="flex items-center gap-2 text-sm text-foreground">
                             <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" aria-hidden="true" />
                             {ing}
                           </li>
@@ -419,7 +422,7 @@ export default function NutritionPage() {
                       </p>
                       <ol className="space-y-1.5" aria-label="Instructions de préparation">
                         {suggestion.instructions.map((step, i) => (
-                          <li key={i} className="flex gap-2 text-sm text-foreground">
+                          <li key={step} className="flex gap-2 text-sm text-foreground">
                             <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
                               {i + 1}
                             </span>
@@ -439,6 +442,7 @@ export default function NutritionPage() {
                       </div>
                     ) : (
                       <button
+                        type="button"
                         onClick={handleValidate}
                         disabled={validating}
                         className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
