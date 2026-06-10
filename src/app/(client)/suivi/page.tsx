@@ -90,7 +90,7 @@ export default function SuiviPage() {
               </dl>
  
               <div className="mt-6 border-t border-border pt-6">
-                <button className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <button type="button" className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   Modifier mon profil
                 </button>
               </div>

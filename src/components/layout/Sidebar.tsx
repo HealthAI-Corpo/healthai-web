@@ -109,6 +109,7 @@ export function Sidebar() {
 
         {/* Bouton Jour / Nuit */}
         <button
+          type="button"
           onClick={toggleColorTheme}
           aria-pressed={isDark}
           aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
@@ -139,6 +140,7 @@ export function Sidebar() {
 
         {/* Bouton Mode malvoyant */}
         <button
+          type="button"
           onClick={toggleAccessibilityMode}
           aria-pressed={isLowVision}
           aria-label={isLowVision ? "Désactiver le mode malvoyant" : "Activer le mode malvoyant (contraste élevé, texte agrandi)"}
