@@ -8,9 +8,13 @@ RUN npm install
 COPY . .
 
 # Variables NEXT_PUBLIC_* bakées au build (disponibles côté client)
+# ⚠️ ATTENTION : Pour Next.js, ces variables doivent être présentes au moment du build
+# car elles sont injectées directement dans le bundle JavaScript envoyé au client.
+# Si vous changez ces valeurs dans docker-compose au runtime, cela n'affectera que le code SERVEUR.
 ARG NEXT_PUBLIC_USE_MOCK=false
 ARG NEXT_PUBLIC_NESTJS_URL=http://localhost:3001
 ARG NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
+ARG NEXT_PUBLIC_GATEWAY_URL=http://localhost:8003
 ARG NEXT_PUBLIC_API_KEY=""
 ARG NEXT_PUBLIC_CLIENT_ID=healthai-admin-front
 ARG NEXT_PUBLIC_METABASE_URL=http://localhost:3002
@@ -18,6 +22,7 @@ ARG NEXT_PUBLIC_METABASE_URL=http://localhost:3002
 ENV NEXT_PUBLIC_USE_MOCK=$NEXT_PUBLIC_USE_MOCK
 ENV NEXT_PUBLIC_NESTJS_URL=$NEXT_PUBLIC_NESTJS_URL
 ENV NEXT_PUBLIC_FASTAPI_URL=$NEXT_PUBLIC_FASTAPI_URL
+ENV NEXT_PUBLIC_GATEWAY_URL=$NEXT_PUBLIC_GATEWAY_URL
 ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
 ENV NEXT_PUBLIC_CLIENT_ID=$NEXT_PUBLIC_CLIENT_ID
 ENV NEXT_PUBLIC_METABASE_URL=$NEXT_PUBLIC_METABASE_URL
