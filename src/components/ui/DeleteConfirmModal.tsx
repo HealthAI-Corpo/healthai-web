@@ -18,7 +18,9 @@ export function DeleteConfirmModal({
 
   // Focus sur Annuler par défaut (pattern sécurité) — RGAA 7.3
   useEffect(() => {
-    if (isOpen) setTimeout(() => cancelRef.current?.focus(), 50);
+    if (!isOpen) return;
+    const timer = setTimeout(() => cancelRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   useEffect(() => {
