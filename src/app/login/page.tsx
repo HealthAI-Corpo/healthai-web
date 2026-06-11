@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Activity, LogIn } from "lucide-react";
 import { login } from "@/lib/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
+import { isMobileAppTarget } from "@/lib/runtime";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
+  const mobileTarget = isMobileAppTarget();
 
   const handleLogin = async () => {
     setError("");
@@ -46,8 +48,9 @@ export default function LoginPage() {
           </h2>
 
           <p className="text-sm text-muted-foreground">
-            Authentification sécurisée via ZITADEL. Tu seras redirigé vers la
-            page de connexion de ton organisation.
+            {mobileTarget
+              ? "Authentification mobile via ZITADEL. La session locale sera créée après validation."
+              : "Authentification sécurisée via ZITADEL. Tu seras redirigé vers la page de connexion de ton organisation."}
           </p>
 
           {error && (

@@ -1,16 +1,14 @@
 "use client";
 
-import { Users, Activity, TrendingUp, ShieldCheck, GitMerge, AlertTriangle, Flame } from "lucide-react";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { Users, Activity, TrendingUp, ShieldCheck, AlertTriangle, Flame } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 import { PipelineStatusBadge } from "@/components/ui/Badge";
-import { KpiCardSkeleton, ChartSkeleton } from "@/components/ui/Skeleton";
+import { KpiCardSkeleton } from "@/components/ui/Skeleton";
 import { useKpis, usePipelineRuns, useDataQuality } from "@/lib/hooks/useApi";
-import { MOCK_MONTHLY_PROGRESSION } from "@/lib/mock-data";
-import { formatNumber, formatPercent, formatDate, formatDuration } from "@/lib/utils";
+import { formatNumber, formatPercent, formatDuration } from "@/lib/utils";
 import { MetabaseEmbed } from "@/app/(dashboard)/analytics/components/metabaseEmbed";
 
 
@@ -75,7 +73,11 @@ export default function OverviewPage() {
                 <CardDescription>Dashboard Metabase — données réelles BDD</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={8} height={280} />
+                <MetabaseEmbed
+                  dashboardId={8}
+                  height={280}
+                  fallback="subscriptions"
+                />
               </CardContent>
             </Card>
           </section>

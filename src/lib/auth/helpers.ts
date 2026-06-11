@@ -40,6 +40,7 @@ export async function syncUtilisateur(accessToken: string): Promise<void> {
 export function isPublicPath(pathname: string): boolean {
   return (
     pathname === "/login" ||
+    pathname === "/mobile-auth/callback" ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico"

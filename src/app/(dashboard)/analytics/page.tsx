@@ -35,7 +35,11 @@ export default function AnalyticsPage() {
                 <CardDescription>{db.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={db.id} height={500} />
+                <MetabaseEmbed
+                  dashboardId={db.id}
+                  height={500}
+                  fallback={db.fallback}
+                />
               </CardContent>
             </Card>
           </section>

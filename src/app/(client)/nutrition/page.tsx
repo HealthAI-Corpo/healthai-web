@@ -471,7 +471,11 @@ export default function NutritionPage() {
               <CardDescription>Données Metabase · historique macronutriments</CardDescription>
             </CardHeader>
             <CardContent>
-              <MetabaseEmbed dashboardId={MB.macros} height={300} />
+              <MetabaseEmbed
+                dashboardId={MB.macros}
+                height={300}
+                fallback="meal-distribution"
+              />
             </CardContent>
           </Card>
         </section>

@@ -313,7 +313,11 @@ export default function SportPage() {
                 <CardDescription>Données Metabase · 5 dernières semaines</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={MB.workout_history} height={300} />
+                <MetabaseEmbed
+                  dashboardId={MB.workout_history}
+                  height={300}
+                  fallback="workout-history"
+                />
               </CardContent>
             </Card>
           </section>

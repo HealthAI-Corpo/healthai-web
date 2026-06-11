@@ -48,7 +48,6 @@ export function ClientSidebar() {
   const pathname = usePathname();
   const {
     colorTheme,
-    accessibilityMode,
     toggleColorTheme,
     toggleAccessibilityMode,
     isLowVision,
