@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:mobile": "NEXT_PUBLIC_APP_TARGET=mobile next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src --ext .ts,.tsx --max-warnings 0",

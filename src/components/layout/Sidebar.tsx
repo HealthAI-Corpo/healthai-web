@@ -7,6 +7,7 @@ import {
   ShieldCheck, Download, Activity, Dumbbell, Apple,
   Users, ChevronRight, Sun, Moon, Eye, EyeOff, User
 } from "lucide-react";
+import { useCurrentAuthSession, useCurrentRole } from "@/lib/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { useAppTheme } from "@/lib/theme";
 import Image from "next/image";
@@ -41,9 +42,21 @@ const NAV_SECTIONS = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { colorTheme, accessibilityMode, toggleColorTheme, toggleAccessibilityMode, isLowVision } = useAppTheme();
+  const role = useCurrentRole();
+  const authSession = useCurrentAuthSession();
+  const { colorTheme, toggleColorTheme, toggleAccessibilityMode, isLowVision } = useAppTheme();
 
   const isDark = colorTheme === "dark";
+  const visibleSections = NAV_SECTIONS.filter(
+    (section) => role !== "user" || section.label !== "Administration"
+  );
+  const initials =
+    authSession?.user.name
+      ?.split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ?? "AD";
 
   return (
     <aside
@@ -64,7 +77,7 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-4 scrollbar-thin" aria-label="Menu principal">
         <ul className="space-y-6" role="list">
-          {NAV_SECTIONS.map((section) => (
+          {visibleSections.map((section) => (
             <li key={section.label}>
               <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                 {section.label}
@@ -183,11 +196,15 @@ export function Sidebar() {
       <div className="border-t border-border p-4">
         <div className="flex items-center gap-3 rounded-lg px-3 py-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold" aria-hidden="true">
-            AD
+            {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className={cn("truncate font-medium text-foreground", isLowVision ? "text-sm" : "text-xs")}>Admin</p>
-            <p className="truncate text-[10px] text-muted-foreground">admin@healthai.coach</p>
+            <p className={cn("truncate font-medium text-foreground", isLowVision ? "text-sm" : "text-xs")}>
+              {authSession?.user.name ?? "Admin"}
+            </p>
+            <p className="truncate text-[10px] text-muted-foreground">
+              {authSession?.user.email ?? "admin@healthai.coach"}
+            </p>
           </div>
         </div>
       </div>

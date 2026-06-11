@@ -94,6 +94,28 @@ npm run build
 npm run start
 ```
 
+### Cible mobile (intégration en cours)
+
+La codebase supporte désormais une cible `mobile` pilotée par `NEXT_PUBLIC_APP_TARGET=mobile` :
+
+- auth OIDC côté client avec callback `/mobile-auth/callback`
+- guard de navigation côté client pour remplacer le middleware web
+- dashboards Metabase remplacés par des charts alimentés par l'API
+
+Exemple de lancement local :
+
+```bash
+NEXT_PUBLIC_APP_TARGET=mobile npm run dev
+```
+
+Pour la cible mobile, il faut également renseigner :
+
+```env
+NEXT_PUBLIC_ZITADEL_ISSUER=...
+NEXT_PUBLIC_ZITADEL_CLIENT_ID=...
+NEXT_PUBLIC_ZITADEL_OIDC_SCOPES=openid profile email offline_access
+```
+
 ## Variables d'environnement
 
 ```env

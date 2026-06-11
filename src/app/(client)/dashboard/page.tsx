@@ -78,7 +78,11 @@ export default function ClientDashboardPage() {
                 <CardDescription>Données Metabase · activité réelle</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={MB.calories_week} height={260} />
+                <MetabaseEmbed
+                  dashboardId={MB.calories_week}
+                  height={260}
+                  fallback="workout-history"
+                />
               </CardContent>
             </Card>
           </section>
@@ -90,7 +94,11 @@ export default function ClientDashboardPage() {
                 <CardDescription>Données Metabase · journée en cours</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={MB.macros} height={260} />
+                <MetabaseEmbed
+                  dashboardId={MB.macros}
+                  height={260}
+                  fallback="meal-distribution"
+                />
               </CardContent>
             </Card>
           </section>

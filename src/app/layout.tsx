@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RouteAccessGuard } from "@/lib/auth/RouteAccessGuard";
 import { QueryProvider } from "@/lib/providers";
 import "@/styles/globals.css";
 
@@ -24,7 +25,9 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Aller au contenu principal
         </a>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <RouteAccessGuard>{children}</RouteAccessGuard>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -52,7 +52,11 @@ export default function SuiviPage() {
               <CardDescription>Données Metabase · sur les 8 dernières semaines</CardDescription>
             </CardHeader>
             <CardContent>
-              <MetabaseEmbed dashboardId={MB.weight_trend} height={300} />
+              <MetabaseEmbed
+                dashboardId={MB.weight_trend}
+                height={300}
+                fallback="weight-trend"
+              />
             </CardContent>
           </Card>
         </section>
@@ -65,7 +69,11 @@ export default function SuiviPage() {
               <CardDescription>Données Metabase · calories brûlées par jour</CardDescription>
             </CardHeader>
             <CardContent>
-              <MetabaseEmbed dashboardId={MB.calories_week} height={280} />
+              <MetabaseEmbed
+                dashboardId={MB.calories_week}
+                height={280}
+                fallback="workout-history"
+              />
             </CardContent>
           </Card>
         </section>
