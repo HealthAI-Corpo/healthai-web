@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Skeleton, KpiCardSkeleton, TableSkeleton, ChartSkeleton } from "./Skeleton";
 
 const meta: Meta<typeof Skeleton> = {
