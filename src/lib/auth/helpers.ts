@@ -37,7 +37,16 @@ export async function syncUtilisateur(accessToken: string): Promise<void> {
   }
 }
 
-export function isPublicPath(pathname: string): boolean {
+// La cible mobile exporte avec trailingSlash: true → "/login/" doit
+// matcher "/login". On normalise avant toute comparaison.
+function normalizePathname(pathname: string): string {
+  return pathname.length > 1 && pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+}
+
+export function isPublicPath(rawPathname: string): boolean {
+  const pathname = normalizePathname(rawPathname);
   return (
     pathname === "/login" ||
     pathname === "/mobile-auth/callback" ||
@@ -56,9 +65,10 @@ export interface GuardSession {
  * Retourne le chemin cible, ou null si la navigation est autorisée.
  */
 export function getRedirect(
-  pathname: string,
+  rawPathname: string,
   session: GuardSession | null,
 ): string | null {
+  const pathname = normalizePathname(rawPathname);
   if (!session && !isPublicPath(pathname)) {
     return "/login";
   }
