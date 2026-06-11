@@ -6,6 +6,7 @@
     "dev": "next dev",
     "dev:mobile": "NEXT_PUBLIC_APP_TARGET=mobile next dev",
     "build": "next build",
+    "build:mobile:web": "node scripts/mobile-build.mjs",
     "start": "next start",
     "lint": "eslint src --ext .ts,.tsx --max-warnings 0",
     "format": "prettier --write .",
@@ -14,9 +15,17 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "doctor": "npx react-doctor@latest"
+    "doctor": "npx react-doctor@latest",
+    "cap:sync": "npm run build:mobile:web && npx cap sync",
+    "cap:sync:android": "npm run build:mobile:web && npx cap sync android",
+    "cap:sync:ios": "npm run build:mobile:web && npx cap sync ios",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/browser": "^8.0.3",
+    "@capacitor/core": "^8.4.0",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.51.1",
@@ -39,6 +48,9 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.1",
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/ios": "^8.0.3",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
     "@playwright/test": "^1.45.3",

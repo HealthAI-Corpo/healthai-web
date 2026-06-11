@@ -6,6 +6,7 @@ import {
   persistMobileSession,
   type StoredMobileTokens,
 } from "@/lib/auth/auth-session";
+import { isMobileAppTarget } from "@/lib/runtime";
 
 const PKCE_STORAGE_KEY = "healthai_mobile_pkce";
 
@@ -46,14 +47,20 @@ function getScopes(): string {
 }
 
 function getRedirectUri(): string {
-  if (typeof window === "undefined") {
-    throw new Error("La redirection mobile ne peut être calculée côté serveur.");
+  const configured = process.env.NEXT_PUBLIC_MOBILE_REDIRECT_URI?.trim();
+  if (configured) return configured;
+
+  if (typeof window !== "undefined") {
+    if (window.location.protocol.startsWith("http")) {
+      return `${window.location.origin}/mobile-auth/callback`;
+    }
   }
 
-  return (
-    process.env.NEXT_PUBLIC_MOBILE_REDIRECT_URI?.trim() ??
-    `${window.location.origin}/mobile-auth/callback`
-  );
+  if (isMobileAppTarget()) {
+    return "com.healthai.coach://auth/callback";
+  }
+
+  throw new Error("La redirection mobile ne peut être calculée côté serveur.");
 }
 
 function toBase64Url(value: Uint8Array): string {
@@ -78,25 +85,25 @@ async function createCodeChallenge(codeVerifier: string): Promise<string> {
 
 function savePkceState(data: PkceState): void {
   if (typeof window === "undefined") return;
-  sessionStorage.setItem(PKCE_STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(PKCE_STORAGE_KEY, JSON.stringify(data));
 }
 
 function readPkceState(): PkceState | null {
   if (typeof window === "undefined") return null;
-  const raw = sessionStorage.getItem(PKCE_STORAGE_KEY);
+  const raw = localStorage.getItem(PKCE_STORAGE_KEY);
   if (!raw) return null;
 
   try {
     return JSON.parse(raw) as PkceState;
   } catch {
-    sessionStorage.removeItem(PKCE_STORAGE_KEY);
+    localStorage.removeItem(PKCE_STORAGE_KEY);
     return null;
   }
 }
 
 function clearPkceState(): void {
   if (typeof window === "undefined") return;
-  sessionStorage.removeItem(PKCE_STORAGE_KEY);
+  localStorage.removeItem(PKCE_STORAGE_KEY);
 }
 
 export async function startMobileLogin(): Promise<void> {
@@ -121,6 +128,17 @@ export async function startMobileLogin(): Promise<void> {
   url.searchParams.set("code_challenge", codeChallenge);
   url.searchParams.set("code_challenge_method", "S256");
   url.searchParams.set("state", state);
+
+  try {
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.isNativePlatform()) {
+      const { Browser } = await import("@capacitor/browser");
+      await Browser.open({ url: url.toString() });
+      return;
+    }
+  } catch {
+    // Fallback navigateur classique
+  }
 
   window.location.assign(url.toString());
 }

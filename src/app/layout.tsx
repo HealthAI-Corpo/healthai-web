@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NativeAppBridge } from "@/lib/auth/NativeAppBridge";
 import { RouteAccessGuard } from "@/lib/auth/RouteAccessGuard";
 import { QueryProvider } from "@/lib/providers";
 import "@/styles/globals.css";
@@ -26,6 +27,7 @@ export default function RootLayout({
           Aller au contenu principal
         </a>
         <QueryProvider>
+          <NativeAppBridge />
           <RouteAccessGuard>{children}</RouteAccessGuard>
         </QueryProvider>
       </body>

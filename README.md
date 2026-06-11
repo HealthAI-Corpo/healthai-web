@@ -94,13 +94,14 @@ npm run build
 npm run start
 ```
 
-### Cible mobile (intégration en cours)
+### Cible mobile (Capacitor)
 
-La codebase supporte désormais une cible `mobile` pilotée par `NEXT_PUBLIC_APP_TARGET=mobile` :
+La codebase supporte une cible `mobile` pilotée par `NEXT_PUBLIC_APP_TARGET=mobile` :
 
 - auth OIDC côté client avec callback `/mobile-auth/callback`
 - guard de navigation côté client pour remplacer le middleware web
 - dashboards Metabase remplacés par des charts alimentés par l'API
+- packaging Android/iOS via Capacitor avec deep link `com.healthai.coach://auth/callback`
 
 Exemple de lancement local :
 
@@ -114,7 +115,36 @@ Pour la cible mobile, il faut également renseigner :
 NEXT_PUBLIC_ZITADEL_ISSUER=...
 NEXT_PUBLIC_ZITADEL_CLIENT_ID=...
 NEXT_PUBLIC_ZITADEL_OIDC_SCOPES=openid profile email offline_access
+NEXT_PUBLIC_MOBILE_REDIRECT_URI=com.healthai.coach://auth/callback
 ```
+
+Configuration Zitadel recommandée pour le natif :
+
+- créer une application publique dédiée au mobile
+- autoriser la redirect URI `com.healthai.coach://auth/callback`
+- conserver l'application web existante pour `NextAuth`
+
+Commandes utiles :
+
+```bash
+# export statique mobile + sync des projets natifs
+npm run cap:sync
+
+# ouvrir les projets natifs
+npm run cap:open:android
+npm run cap:open:ios
+
+# build Android debug depuis Gradle
+cd android
+./gradlew assembleDebug
+```
+
+Notes d'architecture :
+
+- la build mobile exporte uniquement le frontend statique
+- `src/middleware.ts` et `src/app/api` sont exclus de la build mobile
+- l'auth mobile passe par Zitadel en PKCE côté client
+- les pages analytics mobiles n'embarquent pas Metabase, elles consomment l'API NestJS
 
 ## Variables d'environnement
 
