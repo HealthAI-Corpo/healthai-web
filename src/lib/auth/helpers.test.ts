@@ -98,6 +98,14 @@ describe("isPublicPath", () => {
       expect(isPublicPath(path)).toBe(false);
     },
   );
+
+  // Cible mobile : export statique avec trailingSlash → "/login/"
+  it.each(["/login/", "/mobile-auth/callback/"])(
+    "considère %s (trailing slash mobile) comme public",
+    (path) => {
+      expect(isPublicPath(path)).toBe(true);
+    },
+  );
 });
 
 // ─── getRedirect (guards du middleware) ──────────────────────────────────────
@@ -114,6 +122,7 @@ describe("getRedirect", () => {
 
     it("laisse passer les chemins publics", () => {
       expect(getRedirect("/login", null)).toBeNull();
+      expect(getRedirect("/login/", null)).toBeNull(); // trailing slash mobile
       expect(getRedirect("/api/auth/callback/zitadel", null)).toBeNull();
     });
   });
