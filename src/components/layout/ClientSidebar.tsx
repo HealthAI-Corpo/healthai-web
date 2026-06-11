@@ -9,27 +9,27 @@ import Image from "next/image";
  
 const NAV_ITEMS = [
   {
-    href: "/client/dashboard",
+    href: "/dashboard",
     icon: LayoutDashboard,
     label: "Aperçu",
     description: "KPIs & résumé",
   },
   {
-    href: "/client/nutrition",
+    href: "/nutrition",
     icon: Salad,
     label: "Nutrition",
     description: "Analyse repas & coach IA",
     premiumOnly: true,
   },
   {
-    href: "/client/sport",
+    href: "/sport",
     icon: Dumbbell,
     label: "Entraînement",
     description: "Programme & coach IA",
     premiumOnly: true,
   },
   {
-    href: "/client/suivi",
+    href: "/suivi",
     icon: LineChart,
     label: "Mon suivi",
     description: "Courbes & profil",
