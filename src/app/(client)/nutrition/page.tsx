@@ -8,7 +8,7 @@ import {
   Card, CardHeader, CardTitle, CardDescription, CardContent,
 } from "@/components/ui/Card";
 import { MetabaseEmbed } from "@/app/(dashboard)/analytics/components/metabaseEmbed";
-import { analyzePhoto, requestAdvice, getConsumption, requestSuggestion, getSuggestion, validateSuggestion, pollUntilDone,toArray} from "@/lib/api/nutrition";
+import { analyzePhoto, requestAdvice, getConsumption, requestSuggestion, getSuggestion, validateSuggestion, pollUntilDone,} from "@/lib/api/nutrition";
 
 // Mock — remplacer par useSession() en prod
 const USER_ID = 1;
@@ -230,12 +230,7 @@ export default function NutritionPage() {
       if (result.suggestion?.error) {
         setSuggError(result.suggestion.error);
       } else if (result.resultat) {
-        setSuggestion({
-          suggestion_id,
-          ...result.resultat,
-          ingredients: toArray(result.resultat.ingredients),
-          instructions: toArray(result.resultat.instructions),
-        });
+        setSuggestion({ suggestion_id, ...result.resultat });
       }
     } catch (e: unknown) {
       setSuggError(e instanceof Error ? e.message : "Erreur inattendue");

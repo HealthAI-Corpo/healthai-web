@@ -2,18 +2,6 @@ import { API_URLS, authHeaders, authHeadersMultipart } from "./api.config";
 
 const VISION = API_URLS.vision;
 
-export function toArray(val: unknown): string[] {
-  if (Array.isArray(val)) return val;
-  if (typeof val === "string") {
-    try {
-      const parsed = JSON.parse(val);
-      if (Array.isArray(parsed)) return parsed;
-    } catch {}
-    return val.split(/\n|,/).map((s) => s.trim()).filter(Boolean);
-  }
-  return [];
-}
-
 export async function analyzePhoto(file: File) {
   const form = new FormData();
   form.append("file", file);
