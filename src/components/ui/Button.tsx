@@ -49,6 +49,7 @@ export function Button({
   return (
     <button
       ref={ref}
+      type="button"
       disabled={isDisabled}
       aria-busy={loading}
       className={cn(

@@ -52,7 +52,11 @@ export default function SuiviPage() {
               <CardDescription>Données Metabase · sur les 8 dernières semaines</CardDescription>
             </CardHeader>
             <CardContent>
-              <MetabaseEmbed dashboardId={MB.weight_trend} height={300} />
+              <MetabaseEmbed
+                dashboardId={MB.weight_trend}
+                height={300}
+                fallback="weight-trend"
+              />
             </CardContent>
           </Card>
         </section>
@@ -65,7 +69,11 @@ export default function SuiviPage() {
               <CardDescription>Données Metabase · calories brûlées par jour</CardDescription>
             </CardHeader>
             <CardContent>
-              <MetabaseEmbed dashboardId={MB.calories_week} height={280} />
+              <MetabaseEmbed
+                dashboardId={MB.calories_week}
+                height={280}
+                fallback="workout-history"
+              />
             </CardContent>
           </Card>
         </section>
@@ -90,7 +98,7 @@ export default function SuiviPage() {
               </dl>
  
               <div className="mt-6 border-t border-border pt-6">
-                <button className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <button type="button" className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   Modifier mon profil
                 </button>
               </div>

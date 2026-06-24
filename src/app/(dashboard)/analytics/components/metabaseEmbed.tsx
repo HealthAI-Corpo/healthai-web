@@ -1,17 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  MetabaseFallback,
+  type MetabaseFallbackKind,
+} from "@/app/(dashboard)/analytics/components/metabaseFallback";
+import { isMobileAppTarget } from "@/lib/runtime";
 
 interface Props {
   dashboardId: number;
   height?: number;
+  fallback?: MetabaseFallbackKind;
 }
 
-export function MetabaseEmbed({ dashboardId, height = 500 }: Props) {
+export function MetabaseEmbed({
+  dashboardId,
+  height = 500,
+  fallback,
+}: Props) {
   const [url, setUrl]     = useState<string | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (isMobileAppTarget()) return;
+
     fetch("/api/metabase/embed", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -21,6 +33,16 @@ export function MetabaseEmbed({ dashboardId, height = 500 }: Props) {
       .then((d) => setUrl(d.url))
       .catch(() => setError(true));
   }, [dashboardId]);
+
+  if (isMobileAppTarget()) {
+    return fallback ? (
+      <MetabaseFallback kind={fallback} height={height} />
+    ) : (
+      <p className="text-sm text-muted-foreground">
+        Dashboard non disponible en mode mobile.
+      </p>
+    );
+  }
 
   if (error) return (
     <p className="text-sm text-destructive">

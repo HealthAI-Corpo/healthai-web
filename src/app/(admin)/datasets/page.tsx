@@ -115,14 +115,16 @@ export default function DatasetsPage() {
   const exercises = useEditableDataset<Exercise>(exercisesData as unknown as Exercise[]);
   const diet      = useEditableDataset<DietRecommendation>(dietData as unknown as DietRecommendation[]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (usersData)     users.init(usersData as unknown as User[]); },                 [usersData]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (nutritionData) nutrition.init(nutritionData as unknown as NutritionEntry[]); }, [nutritionData]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (exercisesData) exercises.init(exercisesData as unknown as Exercise[]); },      [exercisesData]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (dietData)      diet.init(dietData as unknown as DietRecommendation[]); },      [dietData]);
+  // init est stable (useCallback) — destructuré pour des deps exactes
+  const { init: initUsers }     = users;
+  const { init: initNutrition } = nutrition;
+  const { init: initExercises } = exercises;
+  const { init: initDiet }      = diet;
+
+  useEffect(() => { if (usersData)     initUsers(usersData as unknown as User[]); },                 [usersData, initUsers]);
+  useEffect(() => { if (nutritionData) initNutrition(nutritionData as unknown as NutritionEntry[]); }, [nutritionData, initNutrition]);
+  useEffect(() => { if (exercisesData) initExercises(exercisesData as unknown as Exercise[]); },      [exercisesData, initExercises]);
+  useEffect(() => { if (dietData)      initDiet(dietData as unknown as DietRecommendation[]); },      [dietData, initDiet]);
 
   const markInspected = (id: string) => setInspected((p) => ({ ...p, [id]: true }));
 
@@ -293,6 +295,7 @@ const handleSave = async (values: Record<string, unknown>) => {
         <div role="tablist" aria-label="Sélectionner un dataset" className="flex flex-wrap gap-1 rounded-lg border border-border bg-muted p-1 w-fit">
           {TABS.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               role="tab"
               aria-selected={activeTab === tab.id}

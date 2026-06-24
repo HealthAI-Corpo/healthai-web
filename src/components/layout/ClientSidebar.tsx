@@ -48,7 +48,6 @@ export function ClientSidebar() {
   const pathname = usePathname();
   const {
     colorTheme,
-    accessibilityMode,
     toggleColorTheme,
     toggleAccessibilityMode,
     isLowVision,
@@ -148,6 +147,7 @@ export function ClientSidebar() {
         </p>
  
         <button
+          type="button"
           onClick={toggleColorTheme}
           aria-pressed={isDark}
           aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
@@ -177,6 +177,7 @@ export function ClientSidebar() {
         </button>
  
         <button
+          type="button"
           onClick={toggleAccessibilityMode}
           aria-pressed={isLowVision}
           aria-label={

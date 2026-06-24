@@ -33,7 +33,7 @@ const FASTAPI = process.env.NEXT_PUBLIC_FASTAPI_URL ?? "http://localhost:8000";
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ── helper fetch NestJS ───────────────────────────────────────────────────────
-// ajoute automatiquement Bearer JWT + x-api-key + x-client-id
+// ajoute automatiquement Bearer JWT
 async function nestFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${NESTJS}${path}`, {
     ...options,
@@ -163,6 +163,33 @@ export function useDailyTracking(userId?: string) {
       const path = userId ? `/log-santes?idUtilisateur=${userId}` : "/log-santes";
       return nestFetch<LogSante[]>(path);
     },
+  });
+}
+
+// Logs d'entraînement
+// GET /logs-seance
+export function useWorkoutLogs(userId?: string) {
+  return useQuery({
+    queryKey: ["workout-logs", userId],
+    queryFn: async () => {
+      if (USE_MOCK) {
+        await pause(200);
+        return [] as Array<{
+          idSeanceLog: number;
+          idUtilisateur: number;
+          logDate: string;
+          typeSeance?: string;
+          dureeMinutes?: number;
+          calorieBrulee?: number;
+        }>;
+      }
+
+      const logs = await nestFetch<any[]>("/logs-seance");
+      return userId
+        ? logs.filter((log) => String(log.idUtilisateur) === userId)
+        : logs;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 }
 
