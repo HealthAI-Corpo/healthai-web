@@ -27,18 +27,22 @@ export function EditRowModal({
 }: EditRowModalProps) {
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [prevRow, setPrevRow] = useState(row);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  // Réinitialise le formulaire quand la ligne éditée change — fait pendant
+  // le render (pas en effect) pour éviter un flash de l'ancienne valeur
+  if (row !== prevRow) {
+    setPrevRow(row);
     if (row) setValues({ ...row });
     setErrors({});
-  }, [row]);
+  }
 
   // Focus trap — RGAA 7.3
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => firstInputRef.current?.focus(), 50);
-    }
+    if (!isOpen) return;
+    const timer = setTimeout(() => firstInputRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   // Fermer sur Escape — RGAA 7.5
@@ -88,6 +92,7 @@ export function EditRowModal({
             {title}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Fermer la fenêtre d'édition"
             className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

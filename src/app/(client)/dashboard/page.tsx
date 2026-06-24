@@ -78,7 +78,11 @@ export default function ClientDashboardPage() {
                 <CardDescription>Données Metabase · activité réelle</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={MB.calories_week} height={260} />
+                <MetabaseEmbed
+                  dashboardId={MB.calories_week}
+                  height={260}
+                  fallback="workout-history"
+                />
               </CardContent>
             </Card>
           </section>
@@ -90,7 +94,11 @@ export default function ClientDashboardPage() {
                 <CardDescription>Données Metabase · journée en cours</CardDescription>
               </CardHeader>
               <CardContent>
-                <MetabaseEmbed dashboardId={MB.macros} height={260} />
+                <MetabaseEmbed
+                  dashboardId={MB.macros}
+                  height={260}
+                  fallback="meal-distribution"
+                />
               </CardContent>
             </Card>
           </section>
@@ -148,7 +156,7 @@ export default function ClientDashboardPage() {
                   Recommandations personnalisées, analyse de repas par photo et coaching sportif IA —
                   à partir de 9,99 €/mois.
                 </p>
-                <button className="mt-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <button type="button" className="mt-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   Passer Premium
                 </button>
               </CardContent>

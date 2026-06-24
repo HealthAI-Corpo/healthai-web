@@ -18,7 +18,9 @@ export function DeleteConfirmModal({
 
   // Focus sur Annuler par défaut (pattern sécurité) — RGAA 7.3
   useEffect(() => {
-    if (isOpen) setTimeout(() => cancelRef.current?.focus(), 50);
+    if (!isOpen) return;
+    const timer = setTimeout(() => cancelRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   useEffect(() => {
@@ -53,6 +55,7 @@ export function DeleteConfirmModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Annuler la suppression"
             className="rounded-lg p-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

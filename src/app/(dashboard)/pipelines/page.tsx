@@ -88,7 +88,7 @@ export default function PipelinesPage() {
               <div className="flex items-center gap-2" role="group" aria-label="Filtrer par statut">
                 <Filter className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
                 {STATUS_FILTERS.map((f) => (
-                  <button key={f.value} onClick={() => setFilter(f.value)} aria-pressed={filter === f.value}
+                  <button type="button" key={f.value} onClick={() => setFilter(f.value)} aria-pressed={filter === f.value}
                     className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${filter === f.value ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
                     {f.label}
                   </button>
