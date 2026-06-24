@@ -1,8 +1,10 @@
 import { getToken } from "@/lib/hooks/useAuth";
 
+const GATEWAY = process.env.NEXT_PUBLIC_GATEWAY_URL ?? "http://localhost:8003";
+
 export const API_URLS = {
-  vision: process.env.NEXT_PUBLIC_GATEWAY_URL ?? "http://localhost:8000/vision",
-  workout: process.env.NEXT_PUBLIC_GATEWAY_URL ?? "http://localhost:8000/workout",
+  vision: `${GATEWAY}/vision`,
+  workout: `${GATEWAY}/workout`,
 };
 
 export async function authHeaders(): Promise<Record<string, string>> {
